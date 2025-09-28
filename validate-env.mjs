@@ -1,4 +1,4 @@
-import { formatError, z } from "zod";
+import { z, prettifyError } from "zod";
 
 const serverEnvSchema = z.object({
   DATABASE_URL: z.string().min(1),
@@ -23,11 +23,18 @@ export const clientEnv = {
 const _serverEnv = serverEnvSchema.safeParse(serverEnv);
 const _clientEnv = clientEnvSchema.safeParse(clientEnv);
 
-if (!_serverEnv.success || !_clientEnv.success) {
+if (!_serverEnv.success) {
   console.error(
     "❌ Invalid environment variables:\n",
-    ...formatError(_serverEnv.error?.issues),
-    ...formatError(_clientEnv.error?.issues),
+    prettifyError(_serverEnv.error),
+  );
+  throw new Error("Invalid environment variables");
+}
+
+if (!_clientEnv.success) {
+  console.error(
+    "❌ Invalid environment variables:\n",
+    prettifyError(_clientEnv.error),
   );
   throw new Error("Invalid environment variables");
 }
