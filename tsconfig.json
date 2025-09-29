@@ -20,7 +20,8 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@env": ["./validate-env.mjs"]
+      "@env/server": ["./env.server.ts"],
+      "@env/client": ["./env.client.ts"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
