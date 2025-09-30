@@ -50,7 +50,7 @@ export async function loginAction(
   const { error: updateError } = await supabase
     .from("admins")
     .update({ last_login_at: new Date().toISOString() })
-    .eq("user_id", userId);
+    .eq("auth_user_id", userId);
 
   if (updateError) {
     console.error("Failed to update last_login_at:", updateError);

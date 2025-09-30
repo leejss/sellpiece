@@ -17,8 +17,9 @@ export const users = pgTable("users", {
 export const admins = pgTable("admins", {
   id: uuid("id").defaultRandom().primaryKey(),
   authUserId: uuid("auth_user_id").notNull().unique(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
   name: varchar("name", { length: 120 }),
-  role: varchar("role", { length: 32 }).$defaultFn(() => "admin"),
+  role: varchar("role", { length: 32 }).$defaultFn(() => "manager"),
   isActive: boolean("is_active").notNull().default(true),
   lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true })
