@@ -11,7 +11,7 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:check": "drizzle-kit check",
-    "admin:create": "tsx scripts/create-first-admin.ts"
+    "admin:create": "tsx scripts/create-admin.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.7.0",

@@ -44,10 +44,14 @@ async function createFirstAdmin() {
       console.error("❌ 유효한 이메일을 입력해주세요.");
       process.exit(1);
     }
+    const password = await rl.question("비밀번호: ");
+
+    if (!password) {
+      console.error("❌ 비밀번호를 입력해주세요.");
+      process.exit(1);
+    }
 
     const fullName = await rl.question("관리자 이름 (선택): ");
-    const password = await rl.question("비밀번호 (비워두면 자동 생성): ");
-
     console.log("\n📡 관리자 계정 생성 중...");
 
     // API 호출

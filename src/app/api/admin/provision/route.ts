@@ -32,7 +32,7 @@ export const runtime = "nodejs";
 
 interface ProvisionRequestBody {
   email: string;
-  password?: string;
+  password: string;
   fullName?: string;
 }
 
@@ -60,7 +60,7 @@ export async function POST(req: Request) {
     // 3. Business Logic
     const result = await provisionAdmin(svc, {
       email: email!,
-      password: password ?? generateRandomPassword(),
+      password: password!,
       fullName: fullName ?? undefined,
     });
 
@@ -260,6 +260,10 @@ function validateRequestBody(
   const email = sanitizeEmail(body.email);
   if (!email) {
     return "email is required and must be valid";
+  }
+  const password = body.password;
+  if (!password) {
+    return "password is required";
   }
 
   return null;
