@@ -1,69 +1,129 @@
-"use client";
-
-import { useState } from "react";
-import { uploadProductImage, deleteProductImage } from "../upload-actions";
+import { useState, useTransition } from "react";
+import { uploadProductImage, deleteProductImage } from "../actions";
 import type { ProductImage } from "@/lib/validations/product";
 
+type ImageWithPosition = {
+  url: string;
+  altText?: string;
+  position?: number;
+};
+
 type Props = {
-  images: ProductImage[];
-  onChange: (images: ProductImage[]) => void;
+  images: ImageWithPosition[];
+  onChange: (images: ImageWithPosition[]) => void;
 };
 
 export function ImageUploader({ images, onChange }: Props) {
-  const [uploading, setUploading] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [uploadingFiles, setUploadingFiles] = useState<Set<string>>(new Set());
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
-    setUploading(true);
     setError(null);
 
-    try {
-      const uploadPromises = Array.from(files).map(async (file) => {
-        const formData = new FormData();
-        formData.append("file", file);
+    // 클라이언트 사이드 검증
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    const ALLOWED_TYPES = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/webp",
+    ];
 
-        const result = await uploadProductImage(formData);
+    const invalidFiles = Array.from(files).filter(
+      (file) => file.size > MAX_FILE_SIZE || !ALLOWED_TYPES.includes(file.type),
+    );
 
-        if (!result.success) {
-          throw new Error(result.error);
+    if (invalidFiles.length > 0) {
+      setError(
+        `다음 파일은 업로드할 수 없습니다:\n${invalidFiles
+          .map((f) => `${f.name} (${(f.size / 1024 / 1024).toFixed(2)}MB)`)
+          .join("\n")}`,
+      );
+      e.target.value = "";
+      return;
+    }
+
+    // 업로드 중인 파일 추적
+    const fileNames = Array.from(files).map((f) => f.name);
+    setUploadingFiles(new Set(fileNames));
+
+    startTransition(async () => {
+      try {
+        // Promise.allSettled로 부분 실패 처리
+        const uploadPromises = Array.from(files).map(async (file) => {
+          const formData = new FormData();
+          formData.append("file", file);
+
+          const result = await uploadProductImage(formData);
+
+          if (!result.success) {
+            throw new Error(`${file.name}: ${result.error}`);
+          }
+
+          return {
+            url: result.url,
+            altText: file.name.split(".")[0],
+            position: images.length,
+          };
+        });
+
+        const results = await Promise.allSettled(uploadPromises);
+
+        const uploadedImages: ProductImage[] = [];
+        const errors: string[] = [];
+
+        results.forEach((result) => {
+          if (result.status === "fulfilled") {
+            uploadedImages.push(result.value);
+          } else {
+            errors.push(result.reason.message);
+          }
+        });
+
+        // 성공한 이미지만 추가
+        if (uploadedImages.length > 0) {
+          onChange([...images, ...uploadedImages]);
         }
 
-        return {
-          url: result.url,
-          altText: file.name.split(".")[0],
-          position: images.length,
-        };
-      });
-
-      const uploadedImages = await Promise.all(uploadPromises);
-      onChange([...images, ...uploadedImages]);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "업로드 실패");
-    } finally {
-      setUploading(false);
-      // 파일 입력 초기화
-      e.target.value = "";
-    }
+        // 에러가 있으면 표시
+        if (errors.length > 0) {
+          setError(`일부 이미지 업로드 실패:\n${errors.join("\n")}`);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "업로드 실패");
+      } finally {
+        setUploadingFiles(new Set());
+        e.target.value = "";
+      }
+    });
   };
 
-  const handleRemove = async (index: number) => {
+  const handleRemove = (index: number) => {
     const imageToRemove = images[index];
-    
+
     // URL에서 파일 경로 추출
     const url = new URL(imageToRemove.url);
     const pathParts = url.pathname.split("/");
     const filePath = pathParts.slice(-2).join("/"); // products/filename.ext
 
-    try {
-      await deleteProductImage(filePath);
-      const newImages = images.filter((_, i) => i !== index);
-      onChange(newImages);
-    } catch (err) {
-      setError("이미지 삭제 실패");
-    }
+    startTransition(async () => {
+      try {
+        const result = await deleteProductImage(filePath);
+
+        if (result.success) {
+          const newImages = images.filter((_, i) => i !== index);
+          onChange(newImages);
+        } else {
+          setError(result.error || "이미지 삭제 실패");
+        }
+      } catch (err) {
+        setError("이미지 삭제 중 오류가 발생했습니다");
+      }
+    });
   };
 
   const handleAltTextChange = (index: number, altText: string) => {
@@ -101,17 +161,24 @@ export function ImageUploader({ images, onChange }: Props) {
             accept="image/jpeg,image/jpg,image/png,image/webp"
             multiple
             onChange={handleFileChange}
-            disabled={uploading}
+            disabled={isPending}
             className="hidden"
             id="image-upload"
           />
           <label
             htmlFor="image-upload"
-            className={`cursor-pointer ${uploading ? "opacity-50" : ""}`}
+            className={`cursor-pointer ${isPending ? "opacity-50" : ""}`}
           >
             <div className="text-gray-600">
-              {uploading ? (
-                <p>업로드 중...</p>
+              {isPending ? (
+                <div className="space-y-2">
+                  <p>업로드 중...</p>
+                  {uploadingFiles.size > 0 && (
+                    <p className="text-sm text-gray-500">
+                      {uploadingFiles.size}개 파일 처리 중
+                    </p>
+                  )}
+                </div>
               ) : (
                 <>
                   <p className="mb-2">
@@ -188,7 +255,8 @@ export function ImageUploader({ images, onChange }: Props) {
                   <button
                     type="button"
                     onClick={() => handleRemove(index)}
-                    className="px-3 py-1 text-xs text-red-600 border border-red-600 rounded hover:bg-red-50"
+                    disabled={isPending}
+                    className="px-3 py-1 text-xs text-red-600 border border-red-600 rounded hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     삭제
                   </button>

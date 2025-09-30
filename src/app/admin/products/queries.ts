@@ -4,7 +4,7 @@ import { eq, desc, asc, like, and, or, sql } from "drizzle-orm";
 
 export type ProductWithImages = typeof products.$inferSelect & {
   images: (typeof productImages.$inferSelect)[];
-  category: (typeof productCategories.$inferSelect) | null;
+  category: typeof productCategories.$inferSelect | null;
 };
 
 export type ProductListItem = typeof products.$inferSelect & {
@@ -46,8 +46,8 @@ export async function getProducts(params: GetProductsParams = {}) {
       or(
         like(products.name, `%${search}%`),
         like(products.description, `%${search}%`),
-        like(products.sku, `%${search}%`)
-      )
+        like(products.sku, `%${search}%`),
+      ),
     );
   }
 
@@ -63,7 +63,8 @@ export async function getProducts(params: GetProductsParams = {}) {
 
   // 정렬 조건
   const orderByColumn = products[sortBy];
-  const orderByClause = sortOrder === "asc" ? asc(orderByColumn) : desc(orderByColumn);
+  const orderByClause =
+    sortOrder === "asc" ? asc(orderByColumn) : desc(orderByColumn);
 
   // 데이터 조회
   const [productList, totalCountResult] = await Promise.all([
@@ -75,8 +76,10 @@ export async function getProducts(params: GetProductsParams = {}) {
         description: products.description,
         price: products.price,
         compareAtPrice: products.compareAtPrice,
+        costPerItem: products.costPerItem,
         stock: products.stock,
         sku: products.sku,
+        barcode: products.barcode,
         status: products.status,
         isPublished: products.isPublished,
         publishedAt: products.publishedAt,
@@ -87,7 +90,10 @@ export async function getProducts(params: GetProductsParams = {}) {
         imageCount: sql<number>`count(${productImages.id})::int`,
       })
       .from(products)
-      .leftJoin(productCategories, eq(products.categoryId, productCategories.id))
+      .leftJoin(
+        productCategories,
+        eq(products.categoryId, productCategories.id),
+      )
       .leftJoin(productImages, eq(products.id, productImages.productId))
       .where(whereClause)
       .groupBy(products.id, productCategories.name)
@@ -120,7 +126,7 @@ export async function getProducts(params: GetProductsParams = {}) {
  * 상품 상세 조회 (이미지 및 카테고리 포함)
  */
 export async function getProductById(
-  productId: string
+  productId: string,
 ): Promise<ProductWithImages | null> {
   try {
     const product = await db.query.products.findFirst({
@@ -144,7 +150,7 @@ export async function getProductById(
  * 슬러그로 상품 조회
  */
 export async function getProductBySlug(
-  slug: string
+  slug: string,
 ): Promise<ProductWithImages | null> {
   try {
     const product = await db.query.products.findFirst({
@@ -176,7 +182,10 @@ export async function getProductCountByCategory() {
         count: sql<number>`count(*)::int`,
       })
       .from(products)
-      .leftJoin(productCategories, eq(products.categoryId, productCategories.id))
+      .leftJoin(
+        productCategories,
+        eq(products.categoryId, productCategories.id),
+      )
       .groupBy(products.categoryId, productCategories.name);
 
     return result;

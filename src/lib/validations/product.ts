@@ -13,12 +13,12 @@ export type ProductStatusType = (typeof ProductStatus)[keyof typeof ProductStatu
 export const productImageSchema = z.object({
   url: z.string().url("유효한 URL을 입력해주세요"),
   altText: z.string().optional(),
-  position: z.number().int().min(0).default(0),
+  position: z.number().int().min(0).optional().default(0),
 });
 
 export type ProductImage = z.infer<typeof productImageSchema>;
 
-// 상품 등록 폼 스키마
+// 상품 등록 폼 스키마 (입력용)
 export const createProductSchema = z.object({
   name: z
     .string()
@@ -35,55 +35,33 @@ export const createProductSchema = z.object({
   description: z.string().optional(),
   price: z
     .string()
-    .or(z.number())
-    .transform((val) => {
-      const num = typeof val === "string" ? parseFloat(val) : val;
-      if (isNaN(num)) throw new Error("유효한 가격을 입력해주세요");
-      return num.toFixed(2);
-    })
-    .refine((val) => parseFloat(val) > 0, {
+    .min(1, "가격은 필수입니다")
+    .refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
       message: "가격은 0보다 커야 합니다",
     }),
   compareAtPrice: z
     .string()
-    .or(z.number())
     .optional()
-    .transform((val) => {
-      if (!val) return undefined;
-      const num = typeof val === "string" ? parseFloat(val) : val;
-      if (isNaN(num)) return undefined;
-      return num.toFixed(2);
-    }),
+    .refine(
+      (val) => !val || val === "" || (!isNaN(parseFloat(val)) && parseFloat(val) > 0),
+      { message: "유효한 가격을 입력해주세요" }
+    ),
   costPerItem: z
     .string()
-    .or(z.number())
     .optional()
-    .transform((val) => {
-      if (!val) return undefined;
-      const num = typeof val === "string" ? parseFloat(val) : val;
-      if (isNaN(num)) return undefined;
-      return num.toFixed(2);
-    }),
-  stock: z
-    .string()
-    .or(z.number())
-    .transform((val) => {
-      const num = typeof val === "string" ? parseInt(val, 10) : val;
-      if (isNaN(num)) throw new Error("유효한 재고 수량을 입력해주세요");
-      return num;
-    })
-    .refine((val) => val >= 0, {
-      message: "재고는 0 이상이어야 합니다",
-    })
-    .default(0),
+    .refine(
+      (val) => !val || val === "" || (!isNaN(parseFloat(val)) && parseFloat(val) > 0),
+      { message: "유효한 가격을 입력해주세요" }
+    ),
+  stock: z.number().int("재고는 정수여야 합니다").nonnegative("재고는 0 이상이어야 합니다").default(0),
   sku: z.string().max(100).optional(),
   barcode: z.string().max(100).optional(),
-  categoryId: z.string().uuid("유효한 카테고리를 선택해주세요").optional(),
+  categoryId: z.string().optional(),
   status: z
     .enum([ProductStatus.DRAFT, ProductStatus.ACTIVE, ProductStatus.ARCHIVED])
     .default(ProductStatus.DRAFT),
   isPublished: z.boolean().default(false),
-  images: z.array(productImageSchema).optional().default([]),
+  images: z.array(productImageSchema).default([]),
 });
 
 export type CreateProductInput = z.infer<typeof createProductSchema>;

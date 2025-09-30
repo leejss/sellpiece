@@ -1,10 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { createProduct } from "../actions";
-import type { CreateProductInput } from "@/lib/validations/product";
-import { ProductStatus } from "@/lib/validations/product";
+import {
+  createProductSchema,
+  type CreateProductInput,
+  ProductStatus,
+} from "@/lib/validations/product";
 import { ImageUploader } from "./image-uploader";
 
 type Category = {
@@ -19,24 +23,34 @@ type Props = {
 
 export function ProductForm({ categories }: Props) {
   const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState<Partial<CreateProductInput>>({
-    name: "",
-    slug: "",
-    description: "",
-    price: "0",
-    compareAtPrice: "",
-    costPerItem: "",
-    stock: 0,
-    sku: "",
-    barcode: "",
-    categoryId: "",
-    status: ProductStatus.DRAFT,
-    isPublished: false,
-    images: [],
+  const form = useForm({
+    resolver: zodResolver(createProductSchema),
+    defaultValues: {
+      name: "",
+      slug: "",
+      description: "",
+      price: "",
+      compareAtPrice: "",
+      costPerItem: "",
+      stock: 0,
+      sku: "",
+      barcode: "",
+      categoryId: "",
+      status: ProductStatus.DRAFT,
+      isPublished: false,
+      images: [],
+    } satisfies CreateProductInput,
   });
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    control,
+    formState: { errors, isSubmitting },
+  } = form;
 
   // 상품명에서 자동으로 슬러그 생성
   const generateSlug = (name: string) => {
@@ -49,40 +63,37 @@ export function ProductForm({ categories }: Props) {
   };
 
   const handleNameChange = (name: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      name,
-      slug: generateSlug(name),
-    }));
+    setValue("name", name);
+    setValue("slug", generateSlug(name));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
-
+  const onSubmit = async (data: CreateProductInput) => {
     try {
-      const result = await createProduct(formData as CreateProductInput);
+      const result = await createProduct(data);
 
       if (result.success) {
         router.push("/admin/products");
         router.refresh();
       } else {
-        setError(result.error);
+        alert(result.error);
       }
     } catch (err) {
-      setError("상품 등록 중 오류가 발생했습니다");
       console.error(err);
-    } finally {
-      setIsSubmitting(false);
+      alert("상품 등록 중 오류가 발생했습니다");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
-      {error && (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+      {Object.keys(errors).length > 0 && (
         <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded">
-          {error}
+          <p className="font-semibold mb-2">입력 오류가 있습니다:</p>
+          <ul className="list-disc list-inside space-y-1">
+            {errors.name && <li>{errors.name.message}</li>}
+            {errors.slug && <li>{errors.slug.message}</li>}
+            {errors.price && <li>{errors.price.message}</li>}
+            {errors.stock && <li>{errors.stock.message}</li>}
+          </ul>
         </div>
       )}
 
@@ -97,12 +108,15 @@ export function ProductForm({ categories }: Props) {
           <input
             type="text"
             id="name"
-            value={formData.name}
-            onChange={(e) => handleNameChange(e.target.value)}
-            required
+            {...register("name", {
+              onChange: (e) => handleNameChange(e.target.value),
+            })}
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="예: 프리미엄 티셔츠"
           />
+          {errors.name && (
+            <p className="text-sm text-red-600 mt-1">{errors.name.message}</p>
+          )}
         </div>
 
         <div>
@@ -112,29 +126,28 @@ export function ProductForm({ categories }: Props) {
           <input
             type="text"
             id="slug"
-            value={formData.slug}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, slug: e.target.value }))
-            }
-            required
+            {...register("slug")}
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="예: premium-tshirt"
           />
           <p className="text-sm text-gray-500 mt-1">
             URL에 사용될 고유 식별자 (소문자, 숫자, 하이픈만 사용)
           </p>
+          {errors.slug && (
+            <p className="text-sm text-red-600 mt-1">{errors.slug.message}</p>
+          )}
         </div>
 
         <div>
-          <label htmlFor="description" className="block text-sm font-medium mb-2">
+          <label
+            htmlFor="description"
+            className="block text-sm font-medium mb-2"
+          >
             상품 설명
           </label>
           <textarea
             id="description"
-            value={formData.description}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, description: e.target.value }))
-            }
+            {...register("description")}
             rows={5}
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="상품에 대한 자세한 설명을 입력하세요"
@@ -142,15 +155,15 @@ export function ProductForm({ categories }: Props) {
         </div>
 
         <div>
-          <label htmlFor="categoryId" className="block text-sm font-medium mb-2">
+          <label
+            htmlFor="categoryId"
+            className="block text-sm font-medium mb-2"
+          >
             카테고리
           </label>
           <select
             id="categoryId"
-            value={formData.categoryId}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, categoryId: e.target.value }))
-            }
+            {...register("categoryId")}
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">카테고리 선택</option>
@@ -175,16 +188,17 @@ export function ProductForm({ categories }: Props) {
             <input
               type="number"
               id="price"
-              value={formData.price}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, price: e.target.value }))
-              }
-              required
+              {...register("price")}
               min="0"
               step="0.01"
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="0.00"
             />
+            {errors.price && (
+              <p className="text-sm text-red-600 mt-1">
+                {errors.price.message}
+              </p>
+            )}
           </div>
 
           <div>
@@ -197,13 +211,7 @@ export function ProductForm({ categories }: Props) {
             <input
               type="number"
               id="compareAtPrice"
-              value={formData.compareAtPrice}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  compareAtPrice: e.target.value,
-                }))
-              }
+              {...register("compareAtPrice")}
               min="0"
               step="0.01"
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -212,19 +220,16 @@ export function ProductForm({ categories }: Props) {
           </div>
 
           <div>
-            <label htmlFor="costPerItem" className="block text-sm font-medium mb-2">
+            <label
+              htmlFor="costPerItem"
+              className="block text-sm font-medium mb-2"
+            >
               원가
             </label>
             <input
               type="number"
               id="costPerItem"
-              value={formData.costPerItem}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  costPerItem: e.target.value,
-                }))
-              }
+              {...register("costPerItem")}
               min="0"
               step="0.01"
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -246,18 +251,16 @@ export function ProductForm({ categories }: Props) {
             <input
               type="number"
               id="stock"
-              value={formData.stock}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  stock: parseInt(e.target.value, 10),
-                }))
-              }
-              required
+              {...register("stock", { valueAsNumber: true })}
               min="0"
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="0"
             />
+            {errors.stock && (
+              <p className="text-sm text-red-600 mt-1">
+                {errors.stock.message}
+              </p>
+            )}
           </div>
 
           <div>
@@ -267,10 +270,7 @@ export function ProductForm({ categories }: Props) {
             <input
               type="text"
               id="sku"
-              value={formData.sku}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, sku: e.target.value }))
-              }
+              {...register("sku")}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="예: TSH-001"
             />
@@ -283,10 +283,7 @@ export function ProductForm({ categories }: Props) {
             <input
               type="text"
               id="barcode"
-              value={formData.barcode}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, barcode: e.target.value }))
-              }
+              {...register("barcode")}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="예: 1234567890123"
             />
@@ -297,11 +294,15 @@ export function ProductForm({ categories }: Props) {
       {/* 이미지 */}
       <section className="bg-white rounded-lg border p-6 space-y-4">
         <h2 className="text-xl font-semibold mb-4">이미지</h2>
-        <ImageUploader
-          images={formData.images || []}
-          onChange={(images) =>
-            setFormData((prev) => ({ ...prev, images }))
-          }
+        <Controller
+          name="images"
+          control={control}
+          render={({ field }) => (
+            <ImageUploader
+              images={field.value ?? []}
+              onChange={(images) => field.onChange(images)}
+            />
+          )}
         />
       </section>
 
@@ -316,10 +317,7 @@ export function ProductForm({ categories }: Props) {
             </label>
             <select
               id="status"
-              value={formData.status}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, status: e.target.value as any }))
-              }
+              {...register("status")}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value={ProductStatus.DRAFT}>임시저장</option>
@@ -332,13 +330,7 @@ export function ProductForm({ categories }: Props) {
             <input
               type="checkbox"
               id="isPublished"
-              checked={formData.isPublished}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  isPublished: e.target.checked,
-                }))
-              }
+              {...register("isPublished")}
               className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
             />
             <label htmlFor="isPublished" className="ml-2 text-sm font-medium">
