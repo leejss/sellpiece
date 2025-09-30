@@ -16,7 +16,7 @@ export const users = pgTable("users", {
 
 export const admins = pgTable("admins", {
   id: uuid("id").defaultRandom().primaryKey(),
-  email: varchar("email", { length: 320 }).notNull().unique(),
+  authUserId: uuid("auth_user_id").notNull().unique(),
   name: varchar("name", { length: 120 }),
   role: varchar("role", { length: 32 }).$defaultFn(() => "admin"),
   isActive: boolean("is_active").notNull().default(true),
