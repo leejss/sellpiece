@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { env } from "@env/client";
+import { User } from "@supabase/supabase-js";
 
 export async function middleware(request: NextRequest) {
   // /admin 하위 경로만 검사 (matcher로 제한되지만 가독성을 위해 명시)
@@ -47,27 +48,19 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/admin/login", request.url));
   }
 
-  // 관리자 여부 확인: admins 테이블에 존재하는지 체크
-  const { data: adminRow, error } = await supabase
-    .from("admins")
-    .select("email, is_active")
-    .eq("email", user.email)
-    .eq("is_active", true)
-    .maybeSingle();
-
-  if (error) {
-    // 조회 에러 시 방어적으로 접근 차단
+  // 관리자 여부 확인: app_metadata에서 빠르게 체크
+  if (!isAdminFromToken(user)) {
     return NextResponse.redirect(new URL("/admin/login", request.url));
   }
 
-  if (!adminRow) {
-    return NextResponse.redirect(new URL("/admin/login", request.url));
-  }
-
-  // 통과
   return response;
 }
 
 export const config = {
   matcher: ["/admin/:path*"],
 };
+
+function isAdminFromToken(user: User | null): boolean {
+  if (!user) return false;
+  return user.app_metadata?.isAdmin === true;
+}
