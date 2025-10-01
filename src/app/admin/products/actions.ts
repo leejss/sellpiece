@@ -40,14 +40,12 @@ export async function createProduct(
     const validatedData = createProductSchema.parse(input);
 
     // 3. 이미지 데이터 분리 및 가격 변환
-    const { images, price, compareAtPrice, costPerItem, ...productData } = validatedData;
+    const { images, price, ...productData } = validatedData;
     
     // 문자열 가격을 숫자로 변환
     const processedData = {
       ...productData,
       price: parseFloat(price).toFixed(2),
-      compareAtPrice: compareAtPrice && compareAtPrice !== "" ? parseFloat(compareAtPrice).toFixed(2) : null,
-      costPerItem: costPerItem && costPerItem !== "" ? parseFloat(costPerItem).toFixed(2) : null,
     };
 
     // 4. 트랜잭션으로 상품 및 이미지 저장

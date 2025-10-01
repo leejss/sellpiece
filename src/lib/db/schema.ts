@@ -55,11 +55,8 @@ export const products = pgTable(
   {
     id: uuid("id").defaultRandom().primaryKey(),
     name: varchar("name", { length: 255 }).notNull(),
-    slug: varchar("slug", { length: 255 }).notNull().unique(),
     description: text("description"),
     price: numeric("price", { precision: 10, scale: 2 }).notNull(),
-    compareAtPrice: numeric("compare_at_price", { precision: 10, scale: 2 }), // 할인 전 가격
-    costPerItem: numeric("cost_per_item", { precision: 10, scale: 2 }), // 원가
     stock: integer("stock").notNull().default(0),
     sku: varchar("sku", { length: 100 }), // 재고 관리 코드
     barcode: varchar("barcode", { length: 100 }), // 바코드
@@ -79,7 +76,6 @@ export const products = pgTable(
       .defaultNow(),
   },
   (table) => ({
-    slugIdx: index("products_slug_idx").on(table.slug),
     categoryIdx: index("products_category_idx").on(table.categoryId),
     statusIdx: index("products_status_idx").on(table.status),
   })

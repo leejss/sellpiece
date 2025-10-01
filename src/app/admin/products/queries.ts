@@ -72,11 +72,8 @@ export async function getProducts(params: GetProductsParams = {}) {
       .select({
         id: products.id,
         name: products.name,
-        slug: products.slug,
         description: products.description,
         price: products.price,
-        compareAtPrice: products.compareAtPrice,
-        costPerItem: products.costPerItem,
         stock: products.stock,
         sku: products.sku,
         barcode: products.barcode,
@@ -131,30 +128,6 @@ export async function getProductById(
   try {
     const product = await db.query.products.findFirst({
       where: eq(products.id, productId),
-      with: {
-        images: {
-          orderBy: asc(productImages.position),
-        },
-        category: true,
-      },
-    });
-
-    return product ?? null;
-  } catch (error) {
-    console.error("상품 조회 실패:", error);
-    return null;
-  }
-}
-
-/**
- * 슬러그로 상품 조회
- */
-export async function getProductBySlug(
-  slug: string,
-): Promise<ProductWithImages | null> {
-  try {
-    const product = await db.query.products.findFirst({
-      where: eq(products.slug, slug),
       with: {
         images: {
           orderBy: asc(productImages.position),

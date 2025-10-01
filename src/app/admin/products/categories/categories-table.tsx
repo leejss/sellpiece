@@ -2,21 +2,17 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { deleteCategory } from "./actions";
-import { CategoryModal } from "./category-modal";
-import type { productCategories } from "@/lib/db/schema";
-
-type Category = typeof productCategories.$inferSelect;
+import type { CategoryWithProductCount } from "./queries";
 
 type Props = {
-  categories: Category[];
+  categories: CategoryWithProductCount[];
 };
 
 export function CategoriesTable({ categories }: Props) {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const handleDelete = async (categoryId: string, categoryName: string) => {
     if (
@@ -42,20 +38,6 @@ export function CategoriesTable({ categories }: Props) {
     }
   };
 
-  const handleEdit = (category: Category) => {
-    setEditingCategory(category);
-  };
-
-  const handleCloseModal = () => {
-    setEditingCategory(null);
-    setIsCreateModalOpen(false);
-  };
-
-  const handleSuccess = () => {
-    handleCloseModal();
-    router.refresh();
-  };
-
   const getStatusBadge = (isActive: boolean) => {
     return isActive ? (
       <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
@@ -72,15 +54,12 @@ export function CategoriesTable({ categories }: Props) {
     return (
       <div className="bg-white rounded-lg border p-12 text-center">
         <p className="text-gray-500 mb-4">등록된 카테고리가 없습니다</p>
-        <button
-          onClick={() => setIsCreateModalOpen(true)}
+        <Link
+          href="/admin/products/categories/new"
           className="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
         >
           첫 카테고리 등록하기
-        </button>
-        {isCreateModalOpen && (
-          <CategoryModal onClose={handleCloseModal} onSuccess={handleSuccess} />
-        )}
+        </Link>
       </div>
     );
   }
@@ -91,12 +70,12 @@ export function CategoriesTable({ categories }: Props) {
         {/* 헤더 */}
         <div className="px-6 py-4 border-b flex justify-between items-center">
           <h2 className="text-lg font-semibold">카테고리 목록</h2>
-          <button
-            onClick={() => setIsCreateModalOpen(true)}
+          <Link
+            href="/admin/products/categories/new"
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm"
           >
             + 카테고리 추가
-          </button>
+          </Link>
         </div>
 
         {/* 테이블 */}
@@ -112,6 +91,9 @@ export function CategoriesTable({ categories }: Props) {
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   설명
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  상품 수
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   상태
@@ -138,6 +120,18 @@ export function CategoriesTable({ categories }: Props) {
                   <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
                     {category.description || "-"}
                   </td>
+                  <td className="px-6 py-4 text-center">
+                    {category.productCount > 0 ? (
+                      <Link
+                        href={`/admin/products?categoryId=${category.id}`}
+                        className="inline-flex items-center justify-center min-w-[2rem] px-2 py-1 text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition"
+                      >
+                        {category.productCount}
+                      </Link>
+                    ) : (
+                      <span className="text-gray-400">0</span>
+                    )}
+                  </td>
                   <td className="px-6 py-4">
                     {getStatusBadge(category.isActive)}
                   </td>
@@ -145,12 +139,12 @@ export function CategoriesTable({ categories }: Props) {
                     {new Date(category.createdAt).toLocaleDateString("ko-KR")}
                   </td>
                   <td className="px-6 py-4 text-right text-sm font-medium space-x-2">
-                    <button
-                      onClick={() => handleEdit(category)}
+                    <Link
+                      href={`/admin/products/categories/${category.id}/edit`}
                       className="text-blue-600 hover:text-blue-900"
                     >
                       수정
-                    </button>
+                    </Link>
                     <button
                       onClick={() => handleDelete(category.id, category.name)}
                       disabled={deletingId === category.id}
@@ -165,18 +159,6 @@ export function CategoriesTable({ categories }: Props) {
           </table>
         </div>
       </div>
-
-      {/* 모달 */}
-      {isCreateModalOpen && (
-        <CategoryModal onClose={handleCloseModal} onSuccess={handleSuccess} />
-      )}
-      {editingCategory && (
-        <CategoryModal
-          category={editingCategory}
-          onClose={handleCloseModal}
-          onSuccess={handleSuccess}
-        />
-      )}
     </>
   );
 }

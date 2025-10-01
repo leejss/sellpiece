@@ -25,14 +25,6 @@ export const createProductSchema = z.object({
     .string()
     .min(1, "상품명은 필수입니다")
     .max(255, "상품명은 255자를 초과할 수 없습니다"),
-  slug: z
-    .string()
-    .min(1, "슬러그는 필수입니다")
-    .max(255, "슬러그는 255자를 초과할 수 없습니다")
-    .regex(
-      /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-      "슬러그는 소문자, 숫자, 하이픈(-)만 사용 가능합니다",
-    ),
   description: z.string().optional(),
   price: z
     .string()
@@ -40,22 +32,6 @@ export const createProductSchema = z.object({
     .refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
       message: "가격은 0보다 커야 합니다",
     }),
-  compareAtPrice: z
-    .string()
-    .optional()
-    .refine(
-      (val) =>
-        !val || val === "" || (!isNaN(parseFloat(val)) && parseFloat(val) > 0),
-      { message: "유효한 가격을 입력해주세요" },
-    ),
-  costPerItem: z
-    .string()
-    .optional()
-    .refine(
-      (val) =>
-        !val || val === "" || (!isNaN(parseFloat(val)) && parseFloat(val) > 0),
-      { message: "유효한 가격을 입력해주세요" },
-    ),
   stock: z
     .number()
     .int("재고는 정수여야 합니다")

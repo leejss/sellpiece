@@ -28,11 +28,8 @@ export function ProductForm({ categories }: Props) {
     resolver: zodResolver(createProductSchema),
     defaultValues: {
       name: "",
-      slug: "",
       description: "",
       price: "",
-      compareAtPrice: "",
-      costPerItem: "",
       stock: 0,
       sku: "",
       barcode: "",
@@ -52,20 +49,6 @@ export function ProductForm({ categories }: Props) {
     formState: { errors, isSubmitting },
   } = form;
 
-  // 상품명에서 자동으로 슬러그 생성
-  const generateSlug = (name: string) => {
-    return name
-      .toLowerCase()
-      .replace(/[^a-z0-9가-힣\s-]/g, "")
-      .replace(/\s+/g, "-")
-      .replace(/-+/g, "-")
-      .trim();
-  };
-
-  const handleNameChange = (name: string) => {
-    setValue("name", name);
-    setValue("slug", generateSlug(name));
-  };
 
   const onSubmit = async (data: CreateProductInput) => {
     try {
@@ -90,7 +73,6 @@ export function ProductForm({ categories }: Props) {
           <p className="font-semibold mb-2">입력 오류가 있습니다:</p>
           <ul className="list-disc list-inside space-y-1">
             {errors.name && <li>{errors.name.message}</li>}
-            {errors.slug && <li>{errors.slug.message}</li>}
             {errors.price && <li>{errors.price.message}</li>}
             {errors.stock && <li>{errors.stock.message}</li>}
             {errors.categoryId && <li>{errors.categoryId.message}</li>}
@@ -112,36 +94,12 @@ export function ProductForm({ categories }: Props) {
           <input
             type="text"
             id="name"
-            {...register("name", {
-              onChange: (e) => handleNameChange(e.target.value),
-            })}
+            {...register("name")}
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="예: 프리미엄 티셔츠"
           />
           {errors.name && (
             <p className="text-sm text-red-600 mt-1">{errors.name.message}</p>
-          )}
-        </div>
-
-        <div>
-          <label htmlFor="slug" className="block text-sm font-medium mb-2">
-            <span className="inline-flex items-center gap-1">
-              슬러그
-              <span className="text-red-500 text-lg leading-none">•</span>
-            </span>
-          </label>
-          <input
-            type="text"
-            id="slug"
-            {...register("slug")}
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="예: premium-tshirt"
-          />
-          <p className="text-sm text-gray-500 mt-1">
-            URL에 사용될 고유 식별자 (소문자, 숫자, 하이픈만 사용)
-          </p>
-          {errors.slug && (
-            <p className="text-sm text-red-600 mt-1">{errors.slug.message}</p>
           )}
         </div>
 
@@ -195,65 +153,27 @@ export function ProductForm({ categories }: Props) {
       <section className="bg-white rounded-lg border p-6 space-y-4">
         <h2 className="text-xl font-semibold mb-4">가격 정보</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label htmlFor="price" className="block text-sm font-medium mb-2">
-              <span className="inline-flex items-center gap-1">
-                판매가
-                <span className="text-red-500 text-lg leading-none">•</span>
-              </span>
-            </label>
-            <input
-              type="number"
-              id="price"
-              {...register("price")}
-              min="0"
-              step="0.01"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="0.00"
-            />
-            {errors.price && (
-              <p className="text-sm text-red-600 mt-1">
-                {errors.price.message}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label
-              htmlFor="compareAtPrice"
-              className="block text-sm font-medium mb-2"
-            >
-              정가 (할인 전)
-            </label>
-            <input
-              type="number"
-              id="compareAtPrice"
-              {...register("compareAtPrice")}
-              min="0"
-              step="0.01"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="0.00"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="costPerItem"
-              className="block text-sm font-medium mb-2"
-            >
-              원가
-            </label>
-            <input
-              type="number"
-              id="costPerItem"
-              {...register("costPerItem")}
-              min="0"
-              step="0.01"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="0.00"
-            />
-          </div>
+        <div>
+          <label htmlFor="price" className="block text-sm font-medium mb-2">
+            <span className="inline-flex items-center gap-1">
+              판매가
+              <span className="text-red-500 text-lg leading-none">•</span>
+            </span>
+          </label>
+          <input
+            type="number"
+            id="price"
+            {...register("price")}
+            min="0"
+            step="0.01"
+            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="0.00"
+          />
+          {errors.price && (
+            <p className="text-sm text-red-600 mt-1">
+              {errors.price.message}
+            </p>
+          )}
         </div>
       </section>
 
