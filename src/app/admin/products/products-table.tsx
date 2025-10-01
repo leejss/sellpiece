@@ -70,20 +70,13 @@ export function ProductsTable({ products, pagination }: Props) {
   };
 
   const getStatusBadge = (status: string) => {
-    const styles = {
-      draft: "bg-yellow-100 text-yellow-800",
-      active: "bg-green-100 text-green-800",
-      archived: "bg-gray-100 text-gray-800",
-    };
     const labels = {
-      draft: "임시저장",
-      active: "활성",
-      archived: "보관",
+      draft: "DRAFT",
+      active: "ACTIVE",
+      archived: "ARCHIVED",
     };
     return (
-      <span
-        className={`px-2 py-1 text-xs rounded-full ${styles[status as keyof typeof styles] || styles.draft}`}
-      >
+      <span className="text-xs uppercase tracking-wide text-gray-500">
         {labels[status as keyof typeof labels] || status}
       </span>
     );
@@ -91,111 +84,103 @@ export function ProductsTable({ products, pagination }: Props) {
 
   if (products.length === 0) {
     return (
-      <div className="bg-white rounded-lg border p-12 text-center">
-        <p className="text-gray-500 mb-4">등록된 상품이 없습니다</p>
+      <div className="border border-gray-100 p-20 text-center">
+        <p className="text-gray-400 mb-6 text-lg">No products yet</p>
         <Link
           href="/admin/products/new"
-          className="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          className="inline-block px-6 py-3 bg-black text-white hover:bg-gray-800 transition text-sm"
         >
-          첫 상품 등록하기
+          CREATE FIRST PRODUCT
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg border">
-      {/* 테이블 */}
+    <div className="border border-gray-100">
+      {/* Table - Mobile First */}
       <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b">
+        <table className="w-full min-w-[640px]">
+          <thead className="border-b border-gray-100">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                상품명
+              <th className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 text-left text-xs uppercase tracking-wide text-gray-500 font-normal">
+                Product
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                카테고리
+              <th className="hidden sm:table-cell px-4 lg:px-6 py-3 sm:py-4 text-left text-xs uppercase tracking-wide text-gray-500 font-normal">
+                Category
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                가격
+              <th className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 text-left text-xs uppercase tracking-wide text-gray-500 font-normal">
+                Price
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                재고
+              <th className="hidden md:table-cell px-4 lg:px-6 py-3 sm:py-4 text-left text-xs uppercase tracking-wide text-gray-500 font-normal">
+                Stock
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                상태
+              <th className="hidden lg:table-cell px-6 py-4 text-left text-xs uppercase tracking-wide text-gray-500 font-normal">
+                Status
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                공개
+              <th className="hidden md:table-cell px-4 lg:px-6 py-3 sm:py-4 text-left text-xs uppercase tracking-wide text-gray-500 font-normal">
+                Published
               </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                액션
+              <th className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 text-right text-xs uppercase tracking-wide text-gray-500 font-normal">
+                Actions
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-gray-100">
             {products.map((product) => (
-              <tr key={product.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4">
-                  <div className="flex items-center">
-                    <div>
-                      <div className="font-medium text-gray-900">
-                        {product.name}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        SKU: {product.sku || "N/A"}
-                      </div>
+              <tr key={product.id} className="hover:bg-gray-50/50 transition">
+                <td className="px-3 sm:px-4 lg:px-6 py-4 sm:py-5">
+                  <div className="text-sm sm:text-base font-medium">{product.name}</div>
+                  {product.sku && (
+                    <div className="text-xs text-gray-400 mt-1">
+                      {product.sku}
                     </div>
-                  </div>
+                  )}
                 </td>
-                <td className="px-6 py-4 text-sm text-gray-500">
-                  {product.categoryName || "-"}
+                <td className="hidden sm:table-cell px-4 lg:px-6 py-4 sm:py-5 text-xs sm:text-sm text-gray-500">
+                  {product.categoryName || "—"}
                 </td>
-                <td className="px-6 py-4 text-sm text-gray-900">
+                <td className="px-3 sm:px-4 lg:px-6 py-4 sm:py-5 text-xs sm:text-sm font-medium">
                   ₩{parseFloat(product.price).toLocaleString()}
                 </td>
-                <td className="px-6 py-4 text-sm">
-                  <span
-                    className={
-                      product.stock < 10 ? "text-red-600 font-medium" : ""
-                    }
-                  >
+                <td className="hidden md:table-cell px-4 lg:px-6 py-4 sm:py-5 text-xs sm:text-sm">
+                  <span className={product.stock < 10 ? "text-red-500" : ""}>
                     {product.stock}
                   </span>
                 </td>
-                <td className="px-6 py-4">{getStatusBadge(product.status)}</td>
-                <td className="px-6 py-4">
+                <td className="hidden lg:table-cell px-6 py-5">{getStatusBadge(product.status)}</td>
+                <td className="hidden md:table-cell px-4 lg:px-6 py-4 sm:py-5">
                   <button
                     onClick={() =>
                       handleToggleStatus(product.id, product.isPublished)
                     }
                     disabled={togglingId === product.id}
-                    className={`px-3 py-1 text-xs rounded-full transition ${
+                    className={`text-xs uppercase tracking-wide transition disabled:opacity-50 ${
                       product.isPublished
-                        ? "bg-green-100 text-green-800 hover:bg-green-200"
-                        : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                    } disabled:opacity-50`}
+                        ? "text-black hover:opacity-60"
+                        : "text-gray-400 hover:text-black"
+                    }`}
                   >
                     {togglingId === product.id
                       ? "..."
                       : product.isPublished
-                        ? "공개"
-                        : "비공개"}
+                        ? "YES"
+                        : "NO"}
                   </button>
                 </td>
-                <td className="px-6 py-4 text-right text-sm font-medium space-x-2">
+                <td className="px-3 sm:px-4 lg:px-6 py-4 sm:py-5 text-right text-xs sm:text-sm space-x-2 sm:space-x-4">
                   <Link
                     href={`/admin/products/${product.id}/edit`}
-                    className="text-blue-600 hover:text-blue-900"
+                    className="text-gray-500 hover:text-black transition"
                   >
-                    수정
+                    Edit
                   </Link>
                   <button
                     onClick={() => handleDelete(product.id, product.name)}
                     disabled={deletingId === product.id}
-                    className="text-red-600 hover:text-red-900 disabled:opacity-50"
+                    className="text-gray-500 hover:text-black transition disabled:opacity-50"
                   >
-                    {deletingId === product.id ? "삭제 중..." : "삭제"}
+                    {deletingId === product.id ? "..." : "Del"}
                   </button>
                 </td>
               </tr>
@@ -204,31 +189,31 @@ export function ProductsTable({ products, pagination }: Props) {
         </table>
       </div>
 
-      {/* 페이지네이션 */}
+      {/* Pagination - Mobile First */}
       {pagination.totalPages > 1 && (
-        <div className="px-6 py-4 border-t flex items-center justify-between">
-          <div className="text-sm text-gray-700">
-            전체 {pagination.totalCount}개 중 {(pagination.page - 1) * pagination.limit + 1}-
-            {Math.min(pagination.page * pagination.limit, pagination.totalCount)}개 표시
+        <div className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0">
+          <div className="text-xs sm:text-sm text-gray-500">
+            {(pagination.page - 1) * pagination.limit + 1}–
+            {Math.min(pagination.page * pagination.limit, pagination.totalCount)} of {pagination.totalCount}
           </div>
           <div className="flex gap-2">
             {pagination.hasPrev && (
               <Link
                 href={createPageUrl(pagination.page - 1)}
-                className="px-4 py-2 border rounded-lg hover:bg-gray-50 transition"
+                className="px-3 sm:px-4 py-2 border border-gray-200 hover:border-black transition text-xs sm:text-sm"
               >
-                이전
+                ← Prev
               </Link>
             )}
-            <div className="flex items-center px-4 py-2 border rounded-lg bg-gray-50">
+            <div className="flex items-center px-3 sm:px-4 py-2 text-xs sm:text-sm">
               {pagination.page} / {pagination.totalPages}
             </div>
             {pagination.hasNext && (
               <Link
                 href={createPageUrl(pagination.page + 1)}
-                className="px-4 py-2 border rounded-lg hover:bg-gray-50 transition"
+                className="px-3 sm:px-4 py-2 border border-gray-200 hover:border-black transition text-xs sm:text-sm"
               >
-                다음
+                Next →
               </Link>
             )}
           </div>

@@ -26,58 +26,26 @@ export default async function AdminProductsPage({
   ]);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* 헤더 */}
-      <div className="flex justify-between items-center mb-8">
+    <div className="p-4 sm:p-6 lg:p-12 pb-20 lg:pb-12">
+      {/* Header - Mobile First */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 sm:mb-12">
         <div>
-          <h1 className="text-3xl font-bold mb-2">상품 관리</h1>
-          <p className="text-gray-600">
-            총 {stats.totalProducts}개의 상품이 등록되어 있습니다
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-2 sm:mb-4">
+            Products
+          </h1>
+          <p className="text-sm sm:text-base text-gray-500">
+            {stats.totalProducts} products registered
           </p>
         </div>
-        <div className="flex gap-3">
-          <Link
-            href="/admin/products/categories"
-            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
-          >
-            📁 카테고리 관리
-          </Link>
-          <Link
-            href="/admin/products/new"
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-          >
-            + 상품 등록
-          </Link>
-        </div>
+        <Link
+          href="/admin/products/new"
+          className="w-full sm:w-auto px-6 py-3 bg-black text-white hover:bg-gray-800 transition text-sm text-center"
+        >
+          NEW PRODUCT
+        </Link>
       </div>
 
-      {/* 통계 카드 */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white rounded-lg border p-6">
-          <div className="text-sm text-gray-600 mb-1">전체 상품</div>
-          <div className="text-2xl font-bold">{stats.totalProducts}</div>
-        </div>
-        <div className="bg-white rounded-lg border p-6">
-          <div className="text-sm text-gray-600 mb-1">공개 상품</div>
-          <div className="text-2xl font-bold text-green-600">
-            {stats.publishedProducts}
-          </div>
-        </div>
-        <div className="bg-white rounded-lg border p-6">
-          <div className="text-sm text-gray-600 mb-1">임시저장</div>
-          <div className="text-2xl font-bold text-yellow-600">
-            {stats.draftProducts}
-          </div>
-        </div>
-        <div className="bg-white rounded-lg border p-6">
-          <div className="text-sm text-gray-600 mb-1">재고 부족</div>
-          <div className="text-2xl font-bold text-red-600">
-            {stats.lowStockProducts}
-          </div>
-        </div>
-      </div>
-
-      {/* 상품 테이블 */}
+      {/* Products Table */}
       <ProductsTable products={products} pagination={pagination} />
     </div>
   );
