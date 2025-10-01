@@ -93,6 +93,7 @@ export function ProductForm({ categories }: Props) {
             {errors.slug && <li>{errors.slug.message}</li>}
             {errors.price && <li>{errors.price.message}</li>}
             {errors.stock && <li>{errors.stock.message}</li>}
+            {errors.categoryId && <li>{errors.categoryId.message}</li>}
           </ul>
         </div>
       )}
@@ -103,7 +104,10 @@ export function ProductForm({ categories }: Props) {
 
         <div>
           <label htmlFor="name" className="block text-sm font-medium mb-2">
-            상품명 <span className="text-red-500">*</span>
+            <span className="inline-flex items-center gap-1">
+              상품명
+              <span className="text-red-500 text-lg leading-none">•</span>
+            </span>
           </label>
           <input
             type="text"
@@ -121,7 +125,10 @@ export function ProductForm({ categories }: Props) {
 
         <div>
           <label htmlFor="slug" className="block text-sm font-medium mb-2">
-            슬러그 <span className="text-red-500">*</span>
+            <span className="inline-flex items-center gap-1">
+              슬러그
+              <span className="text-red-500 text-lg leading-none">•</span>
+            </span>
           </label>
           <input
             type="text"
@@ -159,7 +166,10 @@ export function ProductForm({ categories }: Props) {
             htmlFor="categoryId"
             className="block text-sm font-medium mb-2"
           >
-            카테고리
+            <span className="inline-flex items-center gap-1">
+              카테고리
+              <span className="text-red-500 text-lg leading-none">•</span>
+            </span>
           </label>
           <select
             id="categoryId"
@@ -173,6 +183,11 @@ export function ProductForm({ categories }: Props) {
               </option>
             ))}
           </select>
+          {errors.categoryId && (
+            <p className="text-sm text-red-600 mt-1">
+              {errors.categoryId.message}
+            </p>
+          )}
         </div>
       </section>
 
@@ -183,7 +198,10 @@ export function ProductForm({ categories }: Props) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label htmlFor="price" className="block text-sm font-medium mb-2">
-              판매가 <span className="text-red-500">*</span>
+              <span className="inline-flex items-center gap-1">
+                판매가
+                <span className="text-red-500 text-lg leading-none">•</span>
+              </span>
             </label>
             <input
               type="number"
@@ -246,7 +264,10 @@ export function ProductForm({ categories }: Props) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label htmlFor="stock" className="block text-sm font-medium mb-2">
-              재고 수량 <span className="text-red-500">*</span>
+              <span className="inline-flex items-center gap-1">
+                재고 수량
+                <span className="text-red-500 text-lg leading-none">•</span>
+              </span>
             </label>
             <input
               type="number"

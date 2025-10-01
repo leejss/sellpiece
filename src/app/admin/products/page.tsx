@@ -35,12 +35,20 @@ export default async function AdminProductsPage({
             총 {stats.totalProducts}개의 상품이 등록되어 있습니다
           </p>
         </div>
-        <Link
-          href="/admin/products/new"
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-        >
-          + 상품 등록
-        </Link>
+        <div className="flex gap-3">
+          <Link
+            href="/admin/products/categories"
+            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+          >
+            📁 카테고리 관리
+          </Link>
+          <Link
+            href="/admin/products/new"
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          >
+            + 상품 등록
+          </Link>
+        </div>
       </div>
 
       {/* 통계 카드 */}

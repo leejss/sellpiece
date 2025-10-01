@@ -7,7 +7,8 @@ export const ProductStatus = {
   ARCHIVED: "archived",
 } as const;
 
-export type ProductStatusType = (typeof ProductStatus)[keyof typeof ProductStatus];
+export type ProductStatusType =
+  (typeof ProductStatus)[keyof typeof ProductStatus];
 
 // 상품 이미지 스키마
 export const productImageSchema = z.object({
@@ -30,7 +31,7 @@ export const createProductSchema = z.object({
     .max(255, "슬러그는 255자를 초과할 수 없습니다")
     .regex(
       /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-      "슬러그는 소문자, 숫자, 하이픈(-)만 사용 가능합니다"
+      "슬러그는 소문자, 숫자, 하이픈(-)만 사용 가능합니다",
     ),
   description: z.string().optional(),
   price: z
@@ -43,20 +44,26 @@ export const createProductSchema = z.object({
     .string()
     .optional()
     .refine(
-      (val) => !val || val === "" || (!isNaN(parseFloat(val)) && parseFloat(val) > 0),
-      { message: "유효한 가격을 입력해주세요" }
+      (val) =>
+        !val || val === "" || (!isNaN(parseFloat(val)) && parseFloat(val) > 0),
+      { message: "유효한 가격을 입력해주세요" },
     ),
   costPerItem: z
     .string()
     .optional()
     .refine(
-      (val) => !val || val === "" || (!isNaN(parseFloat(val)) && parseFloat(val) > 0),
-      { message: "유효한 가격을 입력해주세요" }
+      (val) =>
+        !val || val === "" || (!isNaN(parseFloat(val)) && parseFloat(val) > 0),
+      { message: "유효한 가격을 입력해주세요" },
     ),
-  stock: z.number().int("재고는 정수여야 합니다").nonnegative("재고는 0 이상이어야 합니다").default(0),
+  stock: z
+    .number()
+    .int("재고는 정수여야 합니다")
+    .nonnegative("재고는 0 이상이어야 합니다")
+    .default(0),
   sku: z.string().max(100).optional(),
   barcode: z.string().max(100).optional(),
-  categoryId: z.string().optional(),
+  categoryId: z.string().min(1, "카테고리는 필수입니다"),
   status: z
     .enum([ProductStatus.DRAFT, ProductStatus.ACTIVE, ProductStatus.ARCHIVED])
     .default(ProductStatus.DRAFT),
@@ -85,7 +92,7 @@ export const createCategorySchema = z.object({
     .max(100, "슬러그는 100자를 초과할 수 없습니다")
     .regex(
       /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-      "슬러그는 소문자, 숫자, 하이픈(-)만 사용 가능합니다"
+      "슬러그는 소문자, 숫자, 하이픈(-)만 사용 가능합니다",
     ),
   description: z.string().optional(),
   isActive: z.boolean().default(true),
