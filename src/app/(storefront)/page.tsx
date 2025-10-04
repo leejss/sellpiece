@@ -1,5 +1,6 @@
-import Link from "next/link";
+import { Menu, ShoppingBag } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { getPublishedProducts } from "./queries";
 
 export default async function StorefrontPage() {
@@ -7,34 +8,39 @@ export default async function StorefrontPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header - Yeezy Style */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-black">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-between">
-          <button className="text-xs sm:text-sm uppercase tracking-wider">
-            Menu
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5 flex items-center justify-between">
+          {/* Menu Icon */}
+          <button className="w-6 h-6 flex items-center justify-center">
+            <Menu size={20} strokeWidth={2} />
           </button>
-          <Link href="/" className="text-base sm:text-lg font-bold tracking-tight">
-            SELLPIECE
-          </Link>
-          <Link href="/cart" className="text-xs sm:text-sm uppercase tracking-wider">
-            Cart
+
+          {/* Cart Icon */}
+          <Link
+            href="/cart"
+            className="w-6 h-6 flex items-center justify-center"
+          >
+            <ShoppingBag size={20} strokeWidth={2} />
           </Link>
         </div>
       </header>
 
-      {/* Products Grid - Yeezy Style */}
       <section className="pt-16 sm:pt-20 px-4 sm:px-6 lg:px-8 pb-16 sm:pb-24 lg:pb-32">
         <div className="max-w-7xl mx-auto">
           {products.length === 0 ? (
             <div className="text-center py-20">
-              <p className="text-sm uppercase tracking-wider text-gray-400">No products</p>
+              <p className="text-sm uppercase tracking-wider text-gray-400">
+                No products
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 lg:gap-8">
               {products.map((product) => (
                 <button
                   key={product.id}
-                  onClick={() => window.location.href = `/products/${product.id}`}
+                  onClick={() =>
+                    (window.location.href = `/products/${product.id}`)
+                  }
                   className="group text-left"
                 >
                   {/* Product Image */}
@@ -49,7 +55,9 @@ export default async function StorefrontPage() {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-white">
-                        <div className="text-[10px] sm:text-xs text-gray-300">NO IMAGE</div>
+                        <div className="text-[10px] sm:text-xs text-gray-300">
+                          NO IMAGE
+                        </div>
                       </div>
                     )}
                   </div>
@@ -66,7 +74,7 @@ export default async function StorefrontPage() {
       </section>
 
       {/* Footer - Mobile First */}
-      <footer className="border-t border-gray-100 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+      {/* <footer className="border-t border-gray-100 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-6">
           <p className="text-xs sm:text-sm text-gray-500 text-center sm:text-left">
             © 2025 SELLPIECE. All rights reserved.
@@ -83,7 +91,7 @@ export default async function StorefrontPage() {
             </Link>
           </div>
         </div>
-      </footer>
+      </footer> */}
     </div>
   );
 }
