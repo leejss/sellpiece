@@ -30,26 +30,6 @@ export default async function StorefrontPage() {
           <ProductGrid products={products} />
         </div>
       </section>
-
-      {/* Footer - Mobile First */}
-      {/* <footer className="border-t border-gray-100 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-6">
-          <p className="text-xs sm:text-sm text-gray-500 text-center sm:text-left">
-            © 2025 SELLPIECE. All rights reserved.
-          </p>
-          <div className="flex gap-6 sm:gap-8 text-xs sm:text-sm text-gray-500">
-            <Link href="/about" className="hover:text-black transition">
-              About
-            </Link>
-            <Link href="/contact" className="hover:text-black transition">
-              Contact
-            </Link>
-            <Link href="/terms" className="hover:text-black transition">
-              Terms
-            </Link>
-          </div>
-        </div>
-      </footer> */}
     </div>
   );
 }
