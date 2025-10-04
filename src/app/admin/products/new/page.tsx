@@ -1,5 +1,5 @@
 import { getActiveCategories } from "../categories/queries";
-import { ProductForm } from "./product-form";
+import { ProductCreateForm } from "@/components/admin/products/product-create-form";
 
 export default async function NewProductPage() {
   const categories = await getActiveCategories();
@@ -11,7 +11,7 @@ export default async function NewProductPage() {
         <p className="text-gray-600">새로운 상품을 등록합니다</p>
       </div>
 
-      <ProductForm categories={categories} />
+      <ProductCreateForm categories={categories} />
     </div>
   );
 }

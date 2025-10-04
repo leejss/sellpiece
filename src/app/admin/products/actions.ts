@@ -41,7 +41,7 @@ export async function createProduct(
 
     // 3. 이미지 데이터 분리 및 가격 변환
     const { images, price, ...productData } = validatedData;
-    
+
     // 문자열 가격을 숫자로 변환
     const processedData = {
       ...productData,
@@ -79,6 +79,8 @@ export async function createProduct(
 
     // 5. 캐시 재검증
     revalidatePath("/admin/products");
+    // 스토어프론트 홈 페이지 갱신
+    revalidatePath("/");
 
     return {
       success: true,
@@ -157,6 +159,10 @@ export async function updateProduct(
     // 4. 캐시 재검증
     revalidatePath("/admin/products");
     revalidatePath(`/admin/products/${id}`);
+    // 스토어프론트 홈 페이지 갱신
+    revalidatePath("/");
+    // 스토어프론트 상세 페이지 갱신
+    revalidatePath(`/products/${id}`);
 
     return {
       success: true,
@@ -203,6 +209,8 @@ export async function deleteProduct(
 
     // 3. 캐시 재검증
     revalidatePath("/admin/products");
+    // 스토어프론트 홈 페이지 갱신
+    revalidatePath("/");
 
     return {
       success: true,
@@ -258,6 +266,10 @@ export async function toggleProductStatus(
     // 3. 캐시 재검증
     revalidatePath("/admin/products");
     revalidatePath(`/admin/products/${productId}`);
+    // 스토어프론트 홈 페이지 갱신
+    revalidatePath("/");
+    // 스토어프론트 상세 페이지 갱신
+    revalidatePath(`/products/${productId}`);
 
     return {
       success: true,
