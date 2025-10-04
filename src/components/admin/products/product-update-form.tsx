@@ -40,8 +40,6 @@ export function ProductUpdateForm({ product, categories }: Props) {
       description: product.description ?? "",
       price: product.price as unknown as string,
       stock: product.stock,
-      sku: product.sku ?? "",
-      barcode: product.barcode ?? "",
       categoryId: product.categoryId ?? "",
       status: product.status as (typeof ProductStatus)[keyof typeof ProductStatus],
       isPublished: product.isPublished,
@@ -75,7 +73,21 @@ export function ProductUpdateForm({ product, categories }: Props) {
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={methods.handleSubmit(onSubmit as any)} className="space-y-8">
+        {/* Readonly identifiers */}
+        <section className="space-y-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <p className="text-xs uppercase tracking-wide text-gray-500 mb-1">SKU</p>
+              <p className="font-mono text-sm select-all">{product.sku ?? "-"}</p>
+            </div>
+            <div>
+              <p className="text-xs uppercase tracking-wide text-gray-500 mb-1">Barcode</p>
+              <p className="font-mono text-sm select-all">{product.barcode ?? "-"}</p>
+            </div>
+          </div>
+        </section>
+
         <BaseProductForm
           submitLabel="상품 수정"
           categories={categories}

@@ -8,6 +8,7 @@ import {
   integer,
   numeric,
   index,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -78,6 +79,8 @@ export const products = pgTable(
   (table) => ({
     categoryIdx: index("products_category_idx").on(table.categoryId),
     statusIdx: index("products_status_idx").on(table.status),
+    skuUniqueIdx: uniqueIndex("products_sku_unique").on(table.sku),
+    barcodeUniqueIdx: uniqueIndex("products_barcode_unique").on(table.barcode),
   })
 );
 

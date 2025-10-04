@@ -16,8 +16,6 @@ export type ProductFormValuesBase = {
   description?: string;
   price: string;
   stock: number;
-  sku?: string;
-  barcode?: string;
   categoryId: string;
   status: ProductStatusType;
   isPublished: boolean;
@@ -43,7 +41,7 @@ export function BaseProductForm({ submitLabel, categories, onCancel }: BaseProdu
     <>
       {/* 에러 메시지 */}
       {Object.keys(errors).length > 0 && (
-        <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded">
+        <div className="text-red-600 text-sm">
           <p className="font-semibold mb-2">입력 오류가 있습니다:</p>
           <ul className="list-disc list-inside space-y-1">
             {errors.name && <li>{errors.name.message as string}</li>}
@@ -55,11 +53,11 @@ export function BaseProductForm({ submitLabel, categories, onCancel }: BaseProdu
       )}
 
       {/* 기본 정보 */}
-      <section className="bg-white rounded-lg border p-6 space-y-4">
-        <h2 className="text-xl font-semibold mb-4">기본 정보</h2>
+      <section className="space-y-4">
+        <h2 className="text-lg font-semibold mb-2">기본 정보</h2>
 
         <div>
-          <label htmlFor="name" className="block text-sm font-medium mb-2">
+          <label htmlFor="name" className="block text-xs uppercase tracking-wide text-gray-500 mb-2">
             <span className="inline-flex items-center gap-1">
               상품명
               <span className="text-red-500 text-lg leading-none">•</span>
@@ -69,7 +67,7 @@ export function BaseProductForm({ submitLabel, categories, onCancel }: BaseProdu
             type="text"
             id="name"
             {...register("name")}
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-0 py-2 bg-transparent border-b border-gray-200 focus:border-black focus:outline-none transition-colors"
             placeholder="예: 프리미엄 티셔츠"
           />
           {errors.name && (
@@ -78,20 +76,20 @@ export function BaseProductForm({ submitLabel, categories, onCancel }: BaseProdu
         </div>
 
         <div>
-          <label htmlFor="description" className="block text-sm font-medium mb-2">
+          <label htmlFor="description" className="block text-xs uppercase tracking-wide text-gray-500 mb-2">
             상품 설명
           </label>
           <textarea
             id="description"
             {...register("description")}
-            rows={5}
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            rows={4}
+            className="w-full px-0 py-2 bg-transparent border-b border-gray-200 focus:border-black focus:outline-none transition-colors"
             placeholder="상품에 대한 자세한 설명을 입력하세요"
           />
         </div>
 
         <div>
-          <label htmlFor="categoryId" className="block text-sm font-medium mb-2">
+          <label htmlFor="categoryId" className="block text-xs uppercase tracking-wide text-gray-500 mb-2">
             <span className="inline-flex items-center gap-1">
               카테고리
               <span className="text-red-500 text-lg leading-none">•</span>
@@ -100,7 +98,7 @@ export function BaseProductForm({ submitLabel, categories, onCancel }: BaseProdu
           <select
             id="categoryId"
             {...register("categoryId")}
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-0 py-2 bg-transparent border-b border-gray-200 focus:border-black focus:outline-none transition-colors"
           >
             <option value="">카테고리 선택</option>
             {categories.map((category) => (
@@ -118,11 +116,11 @@ export function BaseProductForm({ submitLabel, categories, onCancel }: BaseProdu
       </section>
 
       {/* 가격 정보 */}
-      <section className="bg-white rounded-lg border p-6 space-y-4">
-        <h2 className="text-xl font-semibold mb-4">가격 정보</h2>
+      <section className="space-y-4">
+        <h2 className="text-lg font-semibold mb-2">가격 정보</h2>
 
         <div>
-          <label htmlFor="price" className="block text-sm font-medium mb-2">
+          <label htmlFor="price" className="block text-xs uppercase tracking-wide text-gray-500 mb-2">
             <span className="inline-flex items-center gap-1">
               판매가
               <span className="text-red-500 text-lg leading-none">•</span>
@@ -134,7 +132,7 @@ export function BaseProductForm({ submitLabel, categories, onCancel }: BaseProdu
             {...register("price")}
             min="0"
             step="0.01"
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-0 py-2 bg-transparent border-b border-gray-200 focus:border-black focus:outline-none transition-colors"
             placeholder="0.00"
           />
           {errors.price && (
@@ -144,12 +142,12 @@ export function BaseProductForm({ submitLabel, categories, onCancel }: BaseProdu
       </section>
 
       {/* 재고 정보 */}
-      <section className="bg-white rounded-lg border p-6 space-y-4">
-        <h2 className="text-xl font-semibold mb-4">재고 정보</h2>
+      <section className="space-y-4">
+        <h2 className="text-lg font-semibold mb-2">재고 정보</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label htmlFor="stock" className="block text-sm font-medium mb-2">
+            <label htmlFor="stock" className="block text-xs uppercase tracking-wide text-gray-500 mb-2">
               <span className="inline-flex items-center gap-1">
                 재고 수량
                 <span className="text-red-500 text-lg leading-none">•</span>
@@ -160,7 +158,7 @@ export function BaseProductForm({ submitLabel, categories, onCancel }: BaseProdu
               id="stock"
               {...register("stock", { valueAsNumber: true })}
               min="0"
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-0 py-2 bg-transparent border-b border-gray-200 focus:border-black focus:outline-none transition-colors"
               placeholder="0"
             />
             {errors.stock && (
@@ -169,38 +167,13 @@ export function BaseProductForm({ submitLabel, categories, onCancel }: BaseProdu
               </p>
             )}
           </div>
-
-          <div>
-            <label htmlFor="sku" className="block text-sm font-medium mb-2">
-              SKU
-            </label>
-            <input
-              type="text"
-              id="sku"
-              {...register("sku")}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="예: TSH-001"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="barcode" className="block text-sm font-medium mb-2">
-              바코드
-            </label>
-            <input
-              type="text"
-              id="barcode"
-              {...register("barcode")}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="예: 1234567890123"
-            />
-          </div>
+          {/* sku, barcode는 서버에서 자동 생성되며 입력에서 제거되었습니다 */}
         </div>
       </section>
 
       {/* 이미지 */}
-      <section className="bg-white rounded-lg border p-6 space-y-4">
-        <h2 className="text-xl font-semibold mb-4">이미지</h2>
+      <section className="space-y-4">
+        <h2 className="text-lg font-semibold mb-2">이미지</h2>
         <Controller
           name="images"
           control={control}
@@ -214,18 +187,18 @@ export function BaseProductForm({ submitLabel, categories, onCancel }: BaseProdu
       </section>
 
       {/* 상태 */}
-      <section className="bg-white rounded-lg border p-6 space-y-4">
-        <h2 className="text-xl font-semibold mb-4">상태</h2>
+      <section className="space-y-4">
+        <h2 className="text-lg font-semibold mb-2">상태</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="status" className="block text-sm font-medium mb-2">
+            <label htmlFor="status" className="block text-xs uppercase tracking-wide text-gray-500 mb-2">
               상품 상태
             </label>
             <select
               id="status"
               {...register("status")}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-0 py-2 bg-transparent border-b border-gray-200 focus:border-black focus:outline-none transition-colors"
             >
               <option value={ProductStatus.DRAFT}>임시저장</option>
               <option value={ProductStatus.ACTIVE}>활성</option>

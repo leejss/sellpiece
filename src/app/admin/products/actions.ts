@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { products, productImages } from "@/lib/db/schema";
+import { products, productImages, productCategories } from "@/lib/db/schema";
 import {
   createProductSchema,
   updateProductSchema,
@@ -12,6 +12,7 @@ import { requireAdmin } from "@/lib/auth/check-admin";
 import { createClient } from "@/lib/supabase/server";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { generateSku, generateEan13, toCodePrefix } from "@/lib/products/identifiers";
 
 type ActionResult<T = unknown> =
   | { success: true; data: T }
@@ -48,13 +49,50 @@ export async function createProduct(
       price: parseFloat(price).toFixed(2),
     };
 
-    // 4. 트랜잭션으로 상품 및 이미지 저장
+    // 4. SKU/바코드 자동 생성 (패턴 A)
+    let prefix = "GEN";
+    if (validatedData.categoryId) {
+      const cat = await db.query.productCategories.findFirst({
+        where: eq(productCategories.id, validatedData.categoryId),
+      });
+      if (cat?.name) prefix = toCodePrefix(cat.name);
+    } else if (validatedData.name) {
+      prefix = toCodePrefix(validatedData.name);
+    }
+
+    // 고유성 보장 시도 (최대 5회)
+    let sku = "";
+    let barcode = "";
+    for (let i = 0; i < 5; i++) {
+      const candidateSku = generateSku(prefix);
+      const candidateBarcode = generateEan13();
+      const [skuExists] = await db
+        .select({ id: products.id })
+        .from(products)
+        .where(eq(products.sku, candidateSku));
+      const [barcodeExists] = await db
+        .select({ id: products.id })
+        .from(products)
+        .where(eq(products.barcode, candidateBarcode));
+      if (!skuExists && !barcodeExists) {
+        sku = candidateSku;
+        barcode = candidateBarcode;
+        break;
+      }
+    }
+    if (!sku || !barcode) {
+      return { success: false, error: "식별자 생성 실패: 잠시 후 다시 시도해 주세요" };
+    }
+
+    // 5. 트랜잭션으로 상품 및 이미지 저장
     const result = await db.transaction(async (tx) => {
       // 상품 생성
       const [newProduct] = await tx
         .insert(products)
         .values({
           ...processedData,
+          sku,
+          barcode,
           publishedAt:
             validatedData.isPublished && validatedData.status === "active"
               ? new Date()
@@ -77,7 +115,7 @@ export async function createProduct(
       return newProduct;
     });
 
-    // 5. 캐시 재검증
+    // 6. 캐시 재검증
     revalidatePath("/admin/products");
     // 스토어프론트 홈 페이지 갱신
     revalidatePath("/");
@@ -129,10 +167,13 @@ export async function updateProduct(
     // 3. 트랜잭션으로 상품 및 이미지 업데이트
     await db.transaction(async (tx) => {
       // 상품 업데이트
+      // SKU/바코드는 서버 자동 부여 항목이므로 업데이트에서 제외
+      const { sku: _sku, barcode: _barcode, ...rest } = productData as any;
+
       await tx
         .update(products)
         .set({
-          ...productData,
+          ...rest,
           publishedAt:
             validatedData.isPublished && validatedData.status === "active"
               ? new Date()
