@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createProduct } from "@/app/admin/products/actions";
+import { createProduct } from "@/actions/admin/product";
 import {
   createProductSchema,
   type CreateProductInput,
@@ -37,8 +37,6 @@ export function ProductCreateForm({ categories }: Props) {
       description: "",
       price: "",
       stock: 0,
-      sku: "",
-      barcode: "",
       categoryId: "",
       status: ProductStatus.DRAFT,
       isPublished: false,
@@ -46,7 +44,9 @@ export function ProductCreateForm({ categories }: Props) {
     },
   });
 
-  const onSubmit = async (data: ProductFormValuesBase) => {
+  const onSubmit: import("react-hook-form").SubmitHandler<ProductFormValuesBase> = async (
+    data,
+  ) => {
     try {
       const result = await createProduct(data as unknown as CreateProductInput);
 

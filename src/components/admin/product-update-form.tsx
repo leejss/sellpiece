@@ -3,14 +3,14 @@
 import { useRouter } from "next/navigation";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { updateProduct } from "@/app/admin/products/actions";
+import { updateProduct } from "@/actions/admin/product";
 import {
   updateProductSchema,
   type UpdateProductInput,
   ProductStatus,
 } from "@/lib/validations/product";
 import { BaseProductForm, type ProductFormValuesBase } from "./base-product-form";
-import type { ProductWithImages } from "@/app/admin/products/queries";
+import type { ProductWithImages } from "@/lib/db/queries/admin/product";
 
 type Category = {
   id: string;

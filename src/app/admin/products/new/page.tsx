@@ -1,5 +1,5 @@
 import { getActiveCategories } from "../categories/queries";
-import { ProductCreateForm } from "@/components/admin/products/product-create-form";
+import { ProductCreateForm } from "@/components/admin/product-create-form";
 
 export default async function NewProductPage() {
   const categories = await getActiveCategories();

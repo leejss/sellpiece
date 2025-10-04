@@ -1,8 +1,11 @@
 "use client";
 
 import { Controller, useFormContext } from "react-hook-form";
-import { ProductStatus, type ProductStatusType } from "@/lib/validations/product";
-import { ImageUploader } from "@/app/admin/products/new/image-uploader";
+import {
+  ProductStatus,
+  type ProductStatusType,
+} from "@/lib/validations/product";
+import { ImageUploader } from "./image-uploader";
 
 type Category = {
   id: string;
@@ -27,6 +30,13 @@ type BaseProductFormProps = {
   submitLabel: string;
   categories: Category[];
   onCancel: () => void;
+  uploadProductImage?: (formData: FormData) => Promise<
+    | { success: true; url: string; path: string }
+    | { success: false; error: string }
+  >;
+  deleteProductImage?: (
+    filePath: string,
+  ) => Promise<{ success: boolean; error?: string }>;
 };
 
 /**
@@ -34,8 +44,15 @@ type BaseProductFormProps = {
  * - Create/Update 폼에서 재사용
  * - 타입 안전성은 각 래퍼의 zod 스키마로 보장
  */
-export function BaseProductForm({ submitLabel, categories, onCancel }: BaseProductFormProps) {
-  const { register, control, formState } = useFormContext<ProductFormValuesBase>();
+export function BaseProductForm({
+  submitLabel,
+  categories,
+  onCancel,
+  uploadProductImage,
+  deleteProductImage,
+}: BaseProductFormProps) {
+  const { register, control, formState } =
+    useFormContext<ProductFormValuesBase>();
   const { errors, isSubmitting } = formState;
   return (
     <>
@@ -47,7 +64,9 @@ export function BaseProductForm({ submitLabel, categories, onCancel }: BaseProdu
             {errors.name && <li>{errors.name.message as string}</li>}
             {errors.price && <li>{errors.price.message as string}</li>}
             {errors.stock && <li>{errors.stock.message as string}</li>}
-            {errors.categoryId && <li>{errors.categoryId.message as string}</li>}
+            {errors.categoryId && (
+              <li>{errors.categoryId.message as string}</li>
+            )}
           </ul>
         </div>
       )}
@@ -57,7 +76,10 @@ export function BaseProductForm({ submitLabel, categories, onCancel }: BaseProdu
         <h2 className="text-lg font-semibold mb-2">기본 정보</h2>
 
         <div>
-          <label htmlFor="name" className="block text-xs uppercase tracking-wide text-gray-500 mb-2">
+          <label
+            htmlFor="name"
+            className="block text-xs uppercase tracking-wide text-gray-500 mb-2"
+          >
             <span className="inline-flex items-center gap-1">
               상품명
               <span className="text-red-500 text-lg leading-none">•</span>
@@ -71,12 +93,17 @@ export function BaseProductForm({ submitLabel, categories, onCancel }: BaseProdu
             placeholder="예: 프리미엄 티셔츠"
           />
           {errors.name && (
-            <p className="text-sm text-red-600 mt-1">{errors.name.message as string}</p>
+            <p className="text-sm text-red-600 mt-1">
+              {errors.name.message as string}
+            </p>
           )}
         </div>
 
         <div>
-          <label htmlFor="description" className="block text-xs uppercase tracking-wide text-gray-500 mb-2">
+          <label
+            htmlFor="description"
+            className="block text-xs uppercase tracking-wide text-gray-500 mb-2"
+          >
             상품 설명
           </label>
           <textarea
@@ -89,7 +116,10 @@ export function BaseProductForm({ submitLabel, categories, onCancel }: BaseProdu
         </div>
 
         <div>
-          <label htmlFor="categoryId" className="block text-xs uppercase tracking-wide text-gray-500 mb-2">
+          <label
+            htmlFor="categoryId"
+            className="block text-xs uppercase tracking-wide text-gray-500 mb-2"
+          >
             <span className="inline-flex items-center gap-1">
               카테고리
               <span className="text-red-500 text-lg leading-none">•</span>
@@ -120,7 +150,10 @@ export function BaseProductForm({ submitLabel, categories, onCancel }: BaseProdu
         <h2 className="text-lg font-semibold mb-2">가격 정보</h2>
 
         <div>
-          <label htmlFor="price" className="block text-xs uppercase tracking-wide text-gray-500 mb-2">
+          <label
+            htmlFor="price"
+            className="block text-xs uppercase tracking-wide text-gray-500 mb-2"
+          >
             <span className="inline-flex items-center gap-1">
               판매가
               <span className="text-red-500 text-lg leading-none">•</span>
@@ -136,7 +169,9 @@ export function BaseProductForm({ submitLabel, categories, onCancel }: BaseProdu
             placeholder="0.00"
           />
           {errors.price && (
-            <p className="text-sm text-red-600 mt-1">{errors.price.message as string}</p>
+            <p className="text-sm text-red-600 mt-1">
+              {errors.price.message as string}
+            </p>
           )}
         </div>
       </section>
@@ -147,7 +182,10 @@ export function BaseProductForm({ submitLabel, categories, onCancel }: BaseProdu
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label htmlFor="stock" className="block text-xs uppercase tracking-wide text-gray-500 mb-2">
+            <label
+              htmlFor="stock"
+              className="block text-xs uppercase tracking-wide text-gray-500 mb-2"
+            >
               <span className="inline-flex items-center gap-1">
                 재고 수량
                 <span className="text-red-500 text-lg leading-none">•</span>
@@ -181,6 +219,8 @@ export function BaseProductForm({ submitLabel, categories, onCancel }: BaseProdu
             <ImageUploader
               images={field.value ?? []}
               onChange={(images) => field.onChange(images)}
+              uploadProductImage={uploadProductImage}
+              deleteProductImage={deleteProductImage}
             />
           )}
         />
@@ -192,7 +232,10 @@ export function BaseProductForm({ submitLabel, categories, onCancel }: BaseProdu
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="status" className="block text-xs uppercase tracking-wide text-gray-500 mb-2">
+            <label
+              htmlFor="status"
+              className="block text-xs uppercase tracking-wide text-gray-500 mb-2"
+            >
               상품 상태
             </label>
             <select

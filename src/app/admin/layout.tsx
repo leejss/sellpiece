@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
-import { MobileDrawer } from "./components/MobileDrawer";
-import { Sidebar } from "./components/Sidebar";
+import { AdminMobileDrawer } from "@/components/admin/admin-mobile-drawer";
+import { AdminAside } from "@/components/admin/admin-aside";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,11 +32,11 @@ export default function AdminLayout({
         <div className="min-h-screen">
           {/* Mobile Header */}
           <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-            <MobileDrawer />
+            <AdminMobileDrawer />
           </header>
 
           {/* Desktop Sidebar */}
-          <Sidebar />
+          <AdminAside />
 
           {/* Main Content */}
           <main className="pt-16 lg:pt-0 lg:ml-64">{children}</main>

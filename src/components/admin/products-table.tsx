@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { deleteProduct, toggleProductStatus } from "./actions";
-import type { ProductListItem } from "./queries";
+import { deleteProduct, toggleProductStatus } from "@/actions/admin/product";
+import type { ProductListItem } from "@/lib/db/queries/admin/product";
 
 type Props = {
   products: ProductListItem[];
@@ -46,7 +46,7 @@ export function ProductsTable({ products, pagination }: Props) {
 
   const handleToggleStatus = async (
     productId: string,
-    currentStatus: boolean
+    currentStatus: boolean,
   ) => {
     setTogglingId(productId);
     try {
@@ -130,7 +130,9 @@ export function ProductsTable({ products, pagination }: Props) {
             {products.map((product) => (
               <tr key={product.id} className="hover:bg-gray-50/50 transition">
                 <td className="px-3 sm:px-4 lg:px-6 py-4 sm:py-5">
-                  <div className="text-sm sm:text-base font-medium">{product.name}</div>
+                  <div className="text-sm sm:text-base font-medium">
+                    {product.name}
+                  </div>
                   {product.sku && (
                     <div className="text-xs text-gray-400 mt-1">
                       {product.sku}
@@ -148,7 +150,9 @@ export function ProductsTable({ products, pagination }: Props) {
                     {product.stock}
                   </span>
                 </td>
-                <td className="hidden lg:table-cell px-6 py-5">{getStatusBadge(product.status)}</td>
+                <td className="hidden lg:table-cell px-6 py-5">
+                  {getStatusBadge(product.status)}
+                </td>
                 <td className="hidden md:table-cell px-4 lg:px-6 py-4 sm:py-5">
                   <button
                     onClick={() =>
@@ -164,8 +168,8 @@ export function ProductsTable({ products, pagination }: Props) {
                     {togglingId === product.id
                       ? "..."
                       : product.isPublished
-                        ? "YES"
-                        : "NO"}
+                      ? "YES"
+                      : "NO"}
                   </button>
                 </td>
                 <td className="px-3 sm:px-4 lg:px-6 py-4 sm:py-5 text-right text-xs sm:text-sm space-x-2 sm:space-x-4">
@@ -194,7 +198,11 @@ export function ProductsTable({ products, pagination }: Props) {
         <div className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0">
           <div className="text-xs sm:text-sm text-gray-500">
             {(pagination.page - 1) * pagination.limit + 1}–
-            {Math.min(pagination.page * pagination.limit, pagination.totalCount)} of {pagination.totalCount}
+            {Math.min(
+              pagination.page * pagination.limit,
+              pagination.totalCount,
+            )}{" "}
+            of {pagination.totalCount}
           </div>
           <div className="flex gap-2">
             {pagination.hasPrev && (

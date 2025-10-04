@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { adminNavItems } from "@/config/admin/nav-items";
 
-export function MobileDrawer() {
+export function AdminMobileDrawer() {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDrawer = () => setIsOpen(!isOpen);

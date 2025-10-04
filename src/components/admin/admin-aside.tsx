@@ -3,7 +3,7 @@ import Link from "next/link";
 import { adminNavItems } from "@/config/admin/nav-items";
 import { cn } from "@/lib/utils";
 
-export function Sidebar() {
+export function AdminAside() {
   return (
     <aside className="hidden lg:block w-64 border-r border-gray-100 fixed h-screen">
       <div className="p-8">
@@ -21,7 +21,7 @@ export function Sidebar() {
               aria-disabled={item.disabled}
               className={cn(
                 "block py-3 px-4 text-sm hover:bg-gray-50 transition rounded",
-                item.disabled && "text-gray-400 cursor-not-allowed"
+                item.disabled && "text-gray-400 cursor-not-allowed",
               )}
             >
               {item.label}

@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { getProducts, getProductStats } from "./queries";
-import { ProductsTable } from "./products-table";
+import { getProducts, getProductStats } from "@/lib/db/queries/admin/product";
+import { ProductsTable } from "@/components/admin/products-table";
 
 type SearchParams = Promise<{
   page?: string;

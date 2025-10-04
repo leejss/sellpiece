@@ -12,7 +12,11 @@ import { requireAdmin } from "@/lib/auth/check-admin";
 import { createClient } from "@/lib/supabase/server";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { generateSku, generateEan13, toCodePrefix } from "@/lib/products/identifiers";
+import {
+  generateSku,
+  generateEan13,
+  toCodePrefix,
+} from "@/lib/products/identifiers";
 
 type ActionResult<T = unknown> =
   | { success: true; data: T }
@@ -81,7 +85,10 @@ export async function createProduct(
       }
     }
     if (!sku || !barcode) {
-      return { success: false, error: "식별자 생성 실패: 잠시 후 다시 시도해 주세요" };
+      return {
+        success: false,
+        error: "식별자 생성 실패: 잠시 후 다시 시도해 주세요",
+      };
     }
 
     // 5. 트랜잭션으로 상품 및 이미지 저장

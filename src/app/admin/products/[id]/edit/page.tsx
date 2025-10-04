@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import { getProductById } from "../../queries";
+import { getProductById } from "@/lib/db/queries/admin/product";
 import { getActiveCategories } from "../../categories/queries";
-import { ProductUpdateForm } from "@/components/admin/products/product-update-form";
+import { ProductUpdateForm } from "@/components/admin/product-update-form";
 
 type Props = {
   params: Promise<{ id: string }>;

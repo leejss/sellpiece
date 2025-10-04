@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getProductStats } from "./products/queries";
+import { getProductStats } from "@/lib/db/queries/admin/product";
 
 export default async function AdminPage() {
   const stats = await getProductStats();

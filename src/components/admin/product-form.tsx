@@ -3,14 +3,14 @@
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { updateProduct } from "../../actions";
+import { createProduct } from "@/actions/admin/product";
 import {
-  updateProductSchema,
-  type UpdateProductInput,
+  createProductSchema,
+  type CreateProductInput,
   ProductStatus,
 } from "@/lib/validations/product";
-import { ImageUploader } from "../../new/image-uploader";
-import type { ProductWithImages } from "../../queries";
+import { ImageUploader } from "@/components/admin/image-uploader";
+import type { ProductFormValuesBase } from "./base-product-form";
 
 type Category = {
   id: string;
@@ -19,45 +19,41 @@ type Category = {
 };
 
 type Props = {
-  product: ProductWithImages;
   categories: Category[];
 };
 
-export function ProductEditForm({ product, categories }: Props) {
+export function ProductForm({ categories }: Props) {
   const router = useRouter();
 
   const form = useForm({
-    resolver: zodResolver(updateProductSchema),
+    resolver: zodResolver(createProductSchema),
     defaultValues: {
-      id: product.id,
-      name: product.name,
-      description: product.description ?? "",
-      price: product.price,
-      stock: product.stock,
-      sku: product.sku ?? "",
-      barcode: product.barcode ?? "",
-      categoryId: product.categoryId ?? "",
-      status:
-        product.status as (typeof ProductStatus)[keyof typeof ProductStatus],
-      isPublished: product.isPublished,
-      images: product.images.map((img) => ({
-        url: img.url,
-        altText: img.altText ?? "",
-        position: img.position,
-      })),
-    },
+      name: "",
+      description: "",
+      price: "",
+      stock: 0,
+      sku: "",
+      barcode: "",
+      categoryId: "",
+      status: ProductStatus.DRAFT,
+      isPublished: false,
+      images: [],
+    } satisfies CreateProductInput,
   });
 
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     control,
     formState: { errors, isSubmitting },
   } = form;
 
-  const onSubmit = async (data: UpdateProductInput) => {
+
+  const onSubmit = async (data: CreateProductInput) => {
     try {
-      const result = await updateProduct(data);
+      const result = await createProduct(data);
 
       if (result.success) {
         router.push("/admin/products");
@@ -67,7 +63,7 @@ export function ProductEditForm({ product, categories }: Props) {
       }
     } catch (err) {
       console.error(err);
-      alert("상품 수정 중 오류가 발생했습니다");
+      alert("상품 등록 중 오류가 발생했습니다");
     }
   };
 
@@ -175,7 +171,9 @@ export function ProductEditForm({ product, categories }: Props) {
             placeholder="0.00"
           />
           {errors.price && (
-            <p className="text-sm text-red-600 mt-1">{errors.price.message}</p>
+            <p className="text-sm text-red-600 mt-1">
+              {errors.price.message}
+            </p>
           )}
         </div>
       </section>
@@ -244,7 +242,9 @@ export function ProductEditForm({ product, categories }: Props) {
           render={({ field }) => (
             <ImageUploader
               images={field.value ?? []}
-              onChange={(images) => field.onChange(images)}
+              onChange={(images: ProductFormValuesBase["images"]) =>
+                field.onChange(images)
+              }
             />
           )}
         />
@@ -299,7 +299,7 @@ export function ProductEditForm({ product, categories }: Props) {
           disabled={isSubmitting}
           className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isSubmitting ? "수정 중..." : "상품 수정"}
+          {isSubmitting ? "등록 중..." : "상품 등록"}
         </button>
       </div>
     </form>

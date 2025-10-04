@@ -1,5 +1,4 @@
 import { useState, useTransition } from "react";
-import { uploadProductImage, deleteProductImage } from "../actions";
 import type { ProductImage } from "@/lib/validations/product";
 
 type ImageWithPosition = {
@@ -8,17 +7,31 @@ type ImageWithPosition = {
   position?: number;
 };
 
+type UploadResult =
+  | { success: true; url: string; path: string }
+  | { success: false; error: string };
+
 type Props = {
   images: ImageWithPosition[];
   onChange: (images: ImageWithPosition[]) => void;
+  uploadProductImage?: (formData: FormData) => Promise<UploadResult>;
+  deleteProductImage?: (
+    filePath: string,
+  ) => Promise<{ success: boolean; error?: string }>;
 };
 
-export function ImageUploader({ images, onChange }: Props) {
+export function ImageUploader({
+  images,
+  onChange,
+  uploadProductImage,
+  deleteProductImage,
+}: Props) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [uploadingFiles, setUploadingFiles] = useState<Set<string>>(new Set());
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!uploadProductImage) return; // 업로드 함수 없으면 업로드 비활성화
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
@@ -73,7 +86,7 @@ export function ImageUploader({ images, onChange }: Props) {
 
         const results = await Promise.allSettled(uploadPromises);
 
-        const uploadedImages: ProductImage[] = [];
+        const uploadedImages: ImageWithPosition[] = [];
         const errors: string[] = [];
 
         results.forEach((result) => {
@@ -103,6 +116,7 @@ export function ImageUploader({ images, onChange }: Props) {
   };
 
   const handleRemove = (index: number) => {
+    if (!deleteProductImage) return; // 삭제 함수 없으면 삭제 비활성화
     const imageToRemove = images[index];
 
     // URL에서 파일 경로 추출
@@ -112,7 +126,7 @@ export function ImageUploader({ images, onChange }: Props) {
 
     startTransition(async () => {
       try {
-        const result = await deleteProductImage(filePath);
+        const result = await deleteProductImage!(filePath);
 
         if (result.success) {
           const newImages = images.filter((_, i) => i !== index);
