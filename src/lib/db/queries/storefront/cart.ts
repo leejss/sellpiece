@@ -1,10 +1,7 @@
 import { db } from "@/lib/db";
-import { carts, cartItems, productImages } from "@/lib/db/schema";
+import { carts, cartItems } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
-/**
- * 사용자의 장바구니 조회
- */
 export async function getUserCart(userId: string) {
   try {
     // 사용자의 장바구니 찾기 또는 생성
@@ -14,10 +11,8 @@ export async function getUserCart(userId: string) {
 
     if (!cart) {
       // 장바구니가 없으면 생성
-      const [newCart] = await db
-        .insert(carts)
-        .values({ userId })
-        .returning();
+      const [newCart] = await db.insert(carts).values({ userId }).returning();
+
       cart = newCart;
     }
 
@@ -28,7 +23,7 @@ export async function getUserCart(userId: string) {
         product: {
           with: {
             images: {
-              orderBy: productImages.position,
+              orderBy: (img, { asc }) => asc(img.position),
               limit: 1,
             },
           },
@@ -41,10 +36,59 @@ export async function getUserCart(userId: string) {
       items,
     };
   } catch (error) {
-    console.error("장바구니 조회 실패:", error);
+    console.error("Error:getUserCart", error);
     return {
       cart: null,
       items: [],
     };
   }
+}
+
+async function createUserCart(userId: string) {
+  const [newCart] = await db.insert(carts).values({ userId }).returning();
+  return newCart;
+}
+
+export async function getOrCreateUserCart(userId: string) {
+  try {
+    let cart = await db.query.carts.findFirst({
+      where: eq(carts.userId, userId),
+    });
+
+    if (!cart) {
+      const newCart = await createUserCart(userId);
+      cart = newCart;
+    }
+
+    const items = await getUserCartItems(cart.id);
+
+    return {
+      cart,
+      items,
+    };
+  } catch (error) {
+    console.error("Error:getOrCreateUserCart", error);
+    return {
+      cart: null,
+      items: [],
+    };
+  }
+}
+
+async function getUserCartItems(cartId: string) {
+  const items = await db.query.cartItems.findMany({
+    where: eq(cartItems.cartId, cartId),
+    with: {
+      product: {
+        with: {
+          images: {
+            orderBy: (img, { asc }) => asc(img.position),
+            limit: 1,
+          },
+        },
+      },
+    },
+  });
+
+  return items;
 }

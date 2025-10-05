@@ -1,24 +1,3 @@
-/**
- * POST /api/admin/provision
- *
- * Creates an administrator account using the Supabase service role.
- *
- * Security:
- * - Protected by a secret header: `X-Admin-Provision-Secret` must match `ADMIN_PROVISION_SECRET`.
- * - Uses service role client to call `auth.admin.createUser()` and bypass RLS for inserting into `public.admins`.
- *
- * Request JSON body:
- * {
- *   "email": string,              // required
- *   "password"?: string,          // optional; if missing, a random one is generated
- *   "fullName"?: string           // optional; stored in user_metadata and admins.name
- * }
- *
- * Notes:
- * - Idempotent behavior: If the auth user already exists, we reuse it and ensure an admins row exists.
- * - Never log secrets or passwords. Errors are logged without sensitive data.
- */
-
 import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -37,7 +16,7 @@ interface ProvisionRequestBody {
 }
 
 interface ProvisionResult {
-  authUserId: string;
+  userId: string;
   isNewUser: boolean;
 }
 
@@ -48,17 +27,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // 2. Validation
     const body = await safeParseRequest(req);
     const validationError = validateRequestBody(body);
     if (validationError) {
       return NextResponse.json({ error: validationError }, { status: 400 });
     }
     const { email, password, fullName } = body;
+
     const svc = createServiceClient();
 
-    // 3. Business Logic
-    const result = await provisionAdmin(svc, {
+    const { userId, isNewUser } = await provisionAdmin(svc, {
       email: email!,
       password: password!,
       fullName: fullName ?? undefined,
@@ -66,11 +44,11 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       ok: true,
-      authUserId: result.authUserId,
-      isNewUser: result.isNewUser,
+      userId,
+      isNewUser,
     });
   } catch (e) {
-    console.error("/api/admin/provision error", e);
+    console.error("Provision error", e);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 },
@@ -78,10 +56,6 @@ export async function POST(req: Request) {
   }
 }
 
-/**
- * Provisions an admin user (auth + database record).
- * Idempotent: reuses existing auth user and ensures admin record exists.
- */
 async function provisionAdmin(
   svc: SupabaseClient,
   params: { email: string; password: string; fullName?: string },
@@ -105,7 +79,7 @@ async function provisionAdmin(
     throw error;
   }
 
-  return { authUserId: userId, isNewUser };
+  return { userId, isNewUser };
 }
 
 /**
@@ -198,19 +172,19 @@ async function getUserIdByEmail(
  * Idempotent: does nothing if record already exists.
  */
 async function ensureAdminRecord(
-  authUserId: string,
+  userId: string,
   email: string,
   fullName?: string,
 ): Promise<void> {
   const existing = await db
     .select({ id: admins.id })
     .from(admins)
-    .where(eq(admins.authUserId, authUserId))
+    .where(eq(admins.id, userId))
     .limit(1);
 
   if (existing.length === 0) {
     await db.insert(admins).values({
-      authUserId,
+      id: userId,
       email,
       name: fullName,
       isActive: true,
@@ -219,9 +193,6 @@ async function ensureAdminRecord(
   }
 }
 
-/**
- * Cleans up auth user (used for rollback).
- */
 async function cleanupAuthUser(
   svc: SupabaseClient,
   userId: string,

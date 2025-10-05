@@ -1,13 +1,13 @@
-import { Menu, ShoppingBag } from "lucide-react";
-import Link from "next/link";
-import { getUserCart } from "@/lib/db/queries/storefront/cart";
 import { CartItem } from "@/components/storefront/cart-item";
 import { UserProfileSection } from "@/components/storefront/user-profile-section";
+import { requireUserId } from "@/lib/auth/session";
+import { getOrCreateUserCart } from "@/lib/db/queries/storefront/cart";
+import { Menu, ShoppingBag } from "lucide-react";
+import Link from "next/link";
 
 export default async function CartPage() {
-  // TODO: 실제 사용자 ID 가져오기 (세션/인증)
-  const userId = "temp-user-id";
-  const { items } = await getUserCart(userId);
+  const userId = await requireUserId();
+  const { items } = await getOrCreateUserCart(userId);
 
   const subtotal = items.reduce((sum, item) => {
     return sum + parseFloat(item.product.price) * item.quantity;

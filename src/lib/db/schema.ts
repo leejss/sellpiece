@@ -14,14 +14,14 @@ import { relations } from "drizzle-orm";
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
-  authUserId: uuid("auth_user_id").notNull().unique(),
+  // authUserId: uuid("auth_user_id").notNull().unique(),
   fullName: text("full_name"),
   phone: varchar("phone", { length: 256 }),
 });
 
 export const admins = pgTable("admins", {
   id: uuid("id").defaultRandom().primaryKey(),
-  authUserId: uuid("auth_user_id").notNull().unique(),
+  // authUserId: uuid("auth_user_id").notNull().unique(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   name: varchar("name", { length: 120 }),
   role: varchar("role", { length: 32 }).$defaultFn(() => "manager"),
@@ -64,9 +64,7 @@ export const products = pgTable(
     categoryId: uuid("category_id").references(() => productCategories.id, {
       onDelete: "set null",
     }),
-    status: varchar("status", { length: 20 })
-      .notNull()
-      .default("draft"), // draft, active, archived
+    status: varchar("status", { length: 20 }).notNull().default("draft"), // draft, active, archived
     isPublished: boolean("is_published").notNull().default(false),
     publishedAt: timestamp("published_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
@@ -81,7 +79,7 @@ export const products = pgTable(
     statusIdx: index("products_status_idx").on(table.status),
     skuUniqueIdx: uniqueIndex("products_sku_unique").on(table.sku),
     barcodeUniqueIdx: uniqueIndex("products_barcode_unique").on(table.barcode),
-  })
+  }),
 );
 
 // 상품 이미지 테이블
@@ -103,9 +101,9 @@ export const productImages = pgTable(
     productIdx: index("product_images_product_idx").on(table.productId),
     positionIdx: index("product_images_position_idx").on(
       table.productId,
-      table.position
+      table.position,
     ),
-  })
+  }),
 );
 
 // Relations
@@ -121,7 +119,7 @@ export const productCategoriesRelations = relations(
   productCategories,
   ({ many }) => ({
     products: many(products),
-  })
+  }),
 );
 
 export const productImagesRelations = relations(productImages, ({ one }) => ({
@@ -131,7 +129,6 @@ export const productImagesRelations = relations(productImages, ({ one }) => ({
   }),
 }));
 
-// 장바구니 테이블
 export const carts = pgTable("carts", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: uuid("user_id")
@@ -168,7 +165,7 @@ export const cartItems = pgTable(
   (table) => ({
     cartIdx: index("cart_items_cart_idx").on(table.cartId),
     productIdx: index("cart_items_product_idx").on(table.productId),
-  })
+  }),
 );
 
 // Cart Relations
