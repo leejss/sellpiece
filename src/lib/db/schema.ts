@@ -130,3 +130,63 @@ export const productImagesRelations = relations(productImages, ({ one }) => ({
     references: [products.id],
   }),
 }));
+
+// 장바구니 테이블
+export const carts = pgTable("carts", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+// 장바구니 아이템 테이블
+export const cartItems = pgTable(
+  "cart_items",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    cartId: uuid("cart_id")
+      .notNull()
+      .references(() => carts.id, { onDelete: "cascade" }),
+    productId: uuid("product_id")
+      .notNull()
+      .references(() => products.id, { onDelete: "cascade" }),
+    quantity: integer("quantity").notNull().default(1),
+    size: varchar("size", { length: 50 }), // 사이즈 정보 (선택사항)
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => ({
+    cartIdx: index("cart_items_cart_idx").on(table.cartId),
+    productIdx: index("cart_items_product_idx").on(table.productId),
+  })
+);
+
+// Cart Relations
+export const cartsRelations = relations(carts, ({ one, many }) => ({
+  user: one(users, {
+    fields: [carts.userId],
+    references: [users.id],
+  }),
+  items: many(cartItems),
+}));
+
+export const cartItemsRelations = relations(cartItems, ({ one }) => ({
+  cart: one(carts, {
+    fields: [cartItems.cartId],
+    references: [carts.id],
+  }),
+  product: one(products, {
+    fields: [cartItems.productId],
+    references: [products.id],
+  }),
+}));

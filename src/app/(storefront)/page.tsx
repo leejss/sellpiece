@@ -1,6 +1,6 @@
 import { Menu, ShoppingBag } from "lucide-react";
 import Link from "next/link";
-import { getPublishedProducts } from "./queries";
+import { getPublishedProducts } from "@/lib/db/queries/storefront/product";
 import { ProductGrid } from "@/components/storefront/product-grid";
 
 export default async function StorefrontPage() {
