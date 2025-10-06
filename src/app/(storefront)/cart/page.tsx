@@ -1,7 +1,7 @@
 import { CartItem } from "@/components/storefront/cart-item";
 import { UserProfileSection } from "@/components/storefront/user-profile-section";
 import { requireUserId } from "@/lib/auth/session";
-import { getOrCreateUserCart } from "@/lib/db/queries/storefront/cart";
+import { getOrCreateUserCart } from "@/lib/services/storefront/cart.service";
 import { Menu, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 
