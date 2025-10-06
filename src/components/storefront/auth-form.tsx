@@ -45,13 +45,6 @@ export function AuthForm<T extends AuthState>({
   return (
     <div className="flex min-h-screen items-center justify-center bg-white px-4">
       <div className="w-full max-w-sm">
-        {/* Logo/Title */}
-        <div className="mb-12 text-center">
-          <h1 className="font-mono text-2xl font-bold uppercase tracking-wider text-black">
-            SELLPIECE
-          </h1>
-        </div>
-
         {/* Auth Form */}
         <form action={action} className="space-y-6">
           {/* Email Field */}
@@ -124,7 +117,7 @@ export function AuthForm<T extends AuthState>({
           <button
             type="submit"
             disabled={isPending}
-            className="w-full border border-black bg-black px-4 py-3 font-mono text-sm uppercase tracking-wider text-white transition-colors hover:bg-white hover:text-black disabled:opacity-50 disabled:hover:bg-black disabled:hover:text-white"
+            className="w-full border border-black bg-white px-4 py-3 font-mono text-sm uppercase tracking-wider text-black transition-colors hover:bg-black hover:text-white disabled:opacity-50 disabled:hover:bg-black disabled:hover:text-white"
           >
             {isPending ? config.submitPendingText : config.submitText}
           </button>
