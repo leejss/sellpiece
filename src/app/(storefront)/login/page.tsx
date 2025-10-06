@@ -12,13 +12,6 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-white px-4">
       <div className="w-full max-w-sm">
-        {/* Logo/Title */}
-        <div className="mb-12 text-center">
-          <h1 className="font-mono text-2xl font-bold uppercase tracking-wider text-black">
-            SELLPIECE
-          </h1>
-        </div>
-
         {/* Login Form */}
         <form action={formAction} className="space-y-6">
           {/* Email Field */}
