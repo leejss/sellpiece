@@ -3,15 +3,26 @@ import { createServerClient } from "@supabase/ssr";
 import { env } from "@env/client";
 import { User } from "@supabase/supabase-js";
 
+const USER_PROTECTED_ROUTE = ["/cart"];
+const ADMIN_PROTECTED_ROUTE = ["/admin"];
+
+function isUserProtectedRoute(pathname: string) {
+  return USER_PROTECTED_ROUTE.some((r) => pathname.startsWith(r));
+}
+
+function isAdminProtectedRoute(pathname: string) {
+  return ADMIN_PROTECTED_ROUTE.some((r) => pathname.startsWith(r));
+}
+
+function getPathname(request: NextRequest) {
+  const { pathname } = new URL(request.url);
+  return pathname;
+}
+
 export async function middleware(request: NextRequest) {
   // /admin 하위 경로만 검사 (matcher로 제한되지만 가독성을 위해 명시)
-  const { pathname } = new URL(request.url);
-  if (!pathname.startsWith("/admin")) return NextResponse.next();
-  // 로그인 페이지는 보호 예외 처리 (루프 방지)
-  if (pathname === "/admin/login") return NextResponse.next();
-
+  const pathname = getPathname(request);
   const response = NextResponse.next();
-  // 미들웨어에서 Supabase 클라이언트 직접 생성
   const supabase = createServerClient(
     env.NEXT_PUBLIC_SUPABASE_URL,
     env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
@@ -32,32 +43,40 @@ export async function middleware(request: NextRequest) {
       },
     },
   );
-
-  // 세션 확인
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // 비로그인 사용자는 로그인 페이지로
   if (!user) {
-    return NextResponse.redirect(new URL("/admin/login", request.url));
+    if (isAdminProtectedRoute(pathname)) {
+      return NextResponse.redirect(new URL("/unauthorized", request.url));
+    }
+
+    if (isUserProtectedRoute(pathname)) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
   }
 
-  // 이메일이 없으면 접근 불가 처리 (비정상 계정)
-  if (!user.email) {
-    return NextResponse.redirect(new URL("/admin/login", request.url));
-  }
-
-  // 관리자 여부 확인: app_metadata에서 빠르게 체크
-  if (!isAdminFromToken(user)) {
-    return NextResponse.redirect(new URL("/admin/login", request.url));
+  // 인증 + check admin
+  const isAdmin = isAdminFromToken(user);
+  if (isAdminProtectedRoute(pathname) && !isAdmin) {
+    return NextResponse.redirect(new URL("/unauthorized", request.url));
   }
 
   return response;
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: [
+    /*
+     * Match all request paths except:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public files (public folder)
+     */
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
 };
 
 function isAdminFromToken(user: User | null): boolean {
