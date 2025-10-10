@@ -27,9 +27,7 @@ function ProductGrid({ products }: ProductGridProps) {
   if (products.length === 0) {
     return (
       <div className="text-center py-20">
-        <p className="text-sm uppercase tracking-wider text-gray-400">
-          No products
-        </p>
+        <p className="text-sm tracking-wider text-gray-400">no products</p>
       </div>
     );
   }

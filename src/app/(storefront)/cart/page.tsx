@@ -31,14 +31,12 @@ export default async function CartPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {items.length === 0 ? (
             <div className="text-center py-20">
-              <p className="text-sm uppercase tracking-wider text-gray-400 mb-6">
-                Your bag is empty
-              </p>
+              <p className="text-sm text-gray-400 mb-6">empty</p>
               <Link
                 href="/"
-                className="inline-block text-xs uppercase tracking-wider underline hover:no-underline"
+                className="inline-block text-black hover:underline"
               >
-                Continue Shopping
+                continue shopping
               </Link>
             </div>
           ) : (
@@ -62,35 +60,35 @@ export default async function CartPage() {
                 {/* Order Summary */}
                 <div className="border-t border-gray-200 pt-6 space-y-3">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Subtotal</span>
+                    <span className="text-gray-600">subtotal</span>
                     <span className="font-medium">${subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Shipping</span>
+                    <span className="text-gray-600">shipping</span>
                     <span className="font-medium">${shipping.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Tax</span>
+                    <span className="text-gray-600">tax</span>
                     <span className="font-medium">${tax.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-base font-medium pt-3 border-t border-gray-200">
-                    <span>Total</span>
+                    <span>total</span>
                     <span>${total.toFixed(2)}</span>
                   </div>
                 </div>
 
                 {/* Checkout Button */}
-                <button className="w-full mt-8 bg-black text-white py-4 text-xs uppercase tracking-wider hover:bg-gray-800 transition-colors">
-                  Proceed to Checkout
+                <button className="w-full mt-8 bg-black text-white py-4 text-xs tracking-wider hover:bg-gray-800 transition-colors">
+                  proceed to checkout
                 </button>
 
                 {/* Continue Shopping Link */}
                 <div className="text-center mt-6">
                   <Link
                     href="/"
-                    className="text-xs uppercase tracking-wider underline hover:no-underline"
+                    className="text-xs tracking-wider underline hover:no-underline"
                   >
-                    Continue Shopping
+                    continue shopping
                   </Link>
                 </div>
               </div>
