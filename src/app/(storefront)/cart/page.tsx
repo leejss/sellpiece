@@ -2,7 +2,6 @@ import { CartItem } from "@/components/storefront/cart-item";
 import { UserProfileSection } from "@/components/storefront/user-profile-section";
 import { requireUserId } from "@/lib/auth/session";
 import { getOrCreateUserCart } from "@/lib/services/storefront/cart.service";
-import { Menu, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 
 export default async function CartPage() {
@@ -20,22 +19,13 @@ export default async function CartPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5 flex items-center justify-between">
-          <Link href="/" className="w-6 h-6 flex items-center justify-center">
-            <Menu size={20} strokeWidth={2} />
+          <Link href="/" className="hover:underline">
+            back
           </Link>
-
-          <h1 className="text-xs sm:text-sm uppercase tracking-wider font-medium">
-            Shopping Bag
-          </h1>
-
-          <div className="w-6 h-6 flex items-center justify-center">
-            <ShoppingBag size={20} strokeWidth={2} />
-          </div>
         </div>
       </header>
-
       {/* Main Content */}
       <main className="pt-20 sm:pt-24 pb-16 sm:pb-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

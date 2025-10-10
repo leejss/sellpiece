@@ -1,5 +1,4 @@
-"use client";
-
+import { getPublishedProducts } from "@/lib/db/queries/storefront/product";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -19,14 +18,12 @@ type ProductGridProps = {
   products: Product[];
 };
 
-/**
- * Yeezy.com 스타일의 미니멀 프로덕트 그리드 컴포넌트
- * - 깔끔한 흰색 배경
- * - 제품 이미지 중심
- * - SKU 코드 하단 표시
- * - 반응형 그리드 (모바일 2열 → 데스크탑 5열)
- */
-export function ProductGrid({ products }: ProductGridProps) {
+export default async function ProductsServer() {
+  const products = await getPublishedProducts(12);
+  return <ProductGrid products={products} />;
+}
+
+function ProductGrid({ products }: ProductGridProps) {
   if (products.length === 0) {
     return (
       <div className="text-center py-20">
@@ -70,9 +67,7 @@ function ProductCard({ product }: ProductCardProps) {
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-white">
-            <div className="text-[10px] sm:text-xs text-gray-300">
-              NO IMAGE
-            </div>
+            <div className="text-[10px] sm:text-xs text-gray-300">NO IMAGE</div>
           </div>
         )}
       </div>
