@@ -2,6 +2,8 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { db } from "@/lib/db";
+import { users } from "@/lib/db/schema";
 
 export type LoginState = {
   error?: string;
@@ -9,6 +11,7 @@ export type LoginState = {
 
 export type SignupState = {
   error?: string;
+  cause?: string;
 };
 
 export async function loginAction(
@@ -31,7 +34,9 @@ export async function loginAction(
 
   if (error) {
     console.error(error);
-    return { error: "로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요." };
+    return {
+      error: "로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.",
+    };
   }
 
   redirect("/");
@@ -58,15 +63,33 @@ export async function signupAction(
   }
 
   const supabase = await createClient();
-
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
   });
 
   if (error) {
     console.error(error);
-    return { error: "회원가입에 실패했습니다. 다시 시도해주세요." };
+    return {
+      error: "회원가입에 실패했습니다. 다시 시도해주세요.",
+      cause: String(error),
+    };
+  }
+
+  const userId = data.user?.id;
+
+  if (!userId) {
+    return {
+      error: "회원가입에 실패했습니다. 다시 시도해주세요.",
+      cause: "No user ID returned from Supabase signUp",
+    };
+  }
+
+  try {
+    await db.insert(users).values({ id: userId }).onConflictDoNothing();
+  } catch (error) {
+    console.error("회원가입에 실패했습니다.", String(error));
+    return { error: "회원가입에 실패했습니다.", cause: String(error) };
   }
 
   redirect("/login");

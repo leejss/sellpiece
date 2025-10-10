@@ -13,15 +13,13 @@ import {
 import { relations } from "drizzle-orm";
 
 export const users = pgTable("users", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  // authUserId: uuid("auth_user_id").notNull().unique(),
+  id: uuid("id").primaryKey(),
   fullName: text("full_name"),
   phone: varchar("phone", { length: 256 }),
 });
 
 export const admins = pgTable("admins", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  // authUserId: uuid("auth_user_id").notNull().unique(),
+  id: uuid("id").primaryKey(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   name: varchar("name", { length: 120 }),
   role: varchar("role", { length: 32 }).$defaultFn(() => "manager"),
