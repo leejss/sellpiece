@@ -1,8 +1,8 @@
-import { CartItem } from "@/components/storefront/cart-item";
-import { UserProfileSection } from "@/components/storefront/user-profile-section";
-import { requireUserId } from "@/lib/auth/session";
-import { getOrCreateUserCart } from "@/lib/services/storefront/cart.service";
-import Link from "next/link";
+import { CartItem } from '@/components/storefront/cart-item';
+import { UserProfileSection } from '@/components/storefront/user-profile-section';
+import { requireUserId } from '@/lib/auth/session';
+import { getOrCreateUserCart } from '@/lib/services/storefront/cart.service';
+import Link from 'next/link';
 
 export default async function CartPage() {
   const userId = await requireUserId();
@@ -19,37 +19,34 @@ export default async function CartPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5 flex items-center justify-between">
+      <header className="fixed top-0 right-0 left-0 z-50 bg-white">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 sm:py-5 lg:px-8">
           <Link href="/" className="hover:underline">
             back
           </Link>
         </div>
       </header>
       {/* Main Content */}
-      <main className="pt-20 sm:pt-24 pb-16 sm:pb-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <main className="pt-20 pb-16 sm:pt-24 sm:pb-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {items.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="typ-caption text-gray-400 mb-6">empty</p>
-              <Link
-                href="/"
-                className="inline-block typ-body text-black hover:underline"
-              >
+            <div className="py-20 text-center">
+              <p className="typ-caption mb-6 text-gray-400">empty</p>
+              <Link href="/" className="typ-body inline-block text-black hover:underline">
                 continue shopping
               </Link>
             </div>
           ) : (
-            <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+            <div className="flex flex-col gap-8 lg:flex-row lg:gap-12">
               {/* Left Column - User Profile (Desktop) / Top Section (Mobile) */}
-              <div className="lg:w-1/3 order-2 lg:order-1">
+              <div className="order-2 lg:order-1 lg:w-1/3">
                 <div className="lg:sticky lg:top-24">
                   <UserProfileSection />
                 </div>
               </div>
 
               {/* Right Column - Cart Items */}
-              <div className="lg:w-2/3 order-1 lg:order-2">
+              <div className="order-1 lg:order-2 lg:w-2/3">
                 {/* Cart Items */}
                 <div className="mb-8">
                   {items.map((item) => (
@@ -58,36 +55,33 @@ export default async function CartPage() {
                 </div>
 
                 {/* Order Summary */}
-                <div className="border-t border-gray-200 pt-6 space-y-3">
-                  <div className="flex justify-between typ-caption">
+                <div className="space-y-3 border-t border-gray-200 pt-6">
+                  <div className="typ-caption flex justify-between">
                     <span className="text-gray-600">subtotal</span>
                     <span className="font-medium">${subtotal.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between typ-caption">
+                  <div className="typ-caption flex justify-between">
                     <span className="text-gray-600">shipping</span>
                     <span className="font-medium">${shipping.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between typ-caption">
+                  <div className="typ-caption flex justify-between">
                     <span className="text-gray-600">tax</span>
                     <span className="font-medium">${tax.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between typ-subtitle font-medium pt-3 border-t border-gray-200">
+                  <div className="typ-subtitle flex justify-between border-t border-gray-200 pt-3 font-medium">
                     <span>total</span>
                     <span>${total.toFixed(2)}</span>
                   </div>
                 </div>
 
                 {/* Checkout Button */}
-                <button className="w-full mt-8 bg-black text-white py-4 typ-cta hover:bg-gray-800 transition-colors">
+                <button className="typ-cta mt-8 w-full bg-black py-4 text-white transition-colors hover:bg-gray-800">
                   proceed to checkout
                 </button>
 
                 {/* Continue Shopping Link */}
-                <div className="text-center mt-6">
-                  <Link
-                    href="/"
-                    className="typ-link tracking-wider"
-                  >
+                <div className="mt-6 text-center">
+                  <Link href="/" className="typ-link tracking-wider">
                     continue shopping
                   </Link>
                 </div>

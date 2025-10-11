@@ -1,6 +1,6 @@
-import Link from "next/link";
-import { getProducts, getProductStats } from "@/lib/db/queries/admin/product";
-import { ProductsTable } from "@/components/admin/products-table";
+import Link from 'next/link';
+import { getProducts, getProductStats } from '@/lib/db/queries/admin/product';
+import { ProductsTable } from '@/components/admin/products-table';
 
 type SearchParams = Promise<{
   page?: string;
@@ -9,13 +9,9 @@ type SearchParams = Promise<{
   categoryId?: string;
 }>;
 
-export default async function AdminProductsPage({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
+export default async function AdminProductsPage({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams;
-  const page = parseInt(params.page || "1", 10);
+  const page = parseInt(params.page || '1', 10);
   const search = params.search;
   const status = params.status;
   const categoryId = params.categoryId;
@@ -26,20 +22,16 @@ export default async function AdminProductsPage({
   ]);
 
   return (
-    <div className="p-4 sm:p-6 lg:p-12 pb-20 lg:pb-12">
+    <div className="p-4 pb-20 sm:p-6 lg:p-12 lg:pb-12">
       {/* Header - Mobile First */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 sm:mb-12">
+      <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:mb-12 sm:flex-row sm:items-center">
         <div>
-          <h1 className="typ-title font-bold tracking-tight mb-2 sm:mb-4">
-            Products
-          </h1>
-          <p className="typ-caption text-gray-500">
-            {stats.totalProducts} products registered
-          </p>
+          <h1 className="typ-title mb-2 font-bold tracking-tight sm:mb-4">Products</h1>
+          <p className="typ-caption text-gray-500">{stats.totalProducts} products registered</p>
         </div>
         <Link
           href="/admin/products/new"
-          className="w-full sm:w-auto px-6 py-3 bg-black text-white hover:bg-gray-800 transition typ-cta text-center"
+          className="typ-cta w-full bg-black px-6 py-3 text-center text-white transition hover:bg-gray-800 sm:w-auto"
         >
           NEW PRODUCT
         </Link>

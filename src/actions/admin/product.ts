@@ -1,26 +1,20 @@
-"use server";
+'use server';
 
-import { db } from "@/lib/db";
-import { products, productImages, productCategories } from "@/lib/db/schema";
+import { db } from '@/lib/db';
+import { products, productImages, productCategories } from '@/lib/db/schema';
 import {
   createProductSchema,
   updateProductSchema,
   type CreateProductInput,
   type UpdateProductInput,
-} from "@/lib/validations/product";
-import { requireAdmin } from "@/lib/auth/check-admin";
-import { createClient } from "@/lib/supabase/server";
-import { eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
-import {
-  generateSku,
-  generateEan13,
-  toCodePrefix,
-} from "@/lib/products/identifiers";
+} from '@/lib/validations/product';
+import { requireAdmin } from '@/lib/auth/check-admin';
+import { createClient } from '@/lib/supabase/server';
+import { eq } from 'drizzle-orm';
+import { revalidatePath } from 'next/cache';
+import { generateSku, generateEan13, toCodePrefix } from '@/lib/products/identifiers';
 
-type ActionResult<T = unknown> =
-  | { success: true; data: T }
-  | { success: false; error: string };
+type ActionResult<T = unknown> = { success: true; data: T } | { success: false; error: string };
 
 /**
  * 상품 등록 서버 액션
@@ -36,7 +30,7 @@ export async function createProduct(
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return { success: false, error: "인증이 필요합니다" };
+      return { success: false, error: '인증이 필요합니다' };
     }
 
     await requireAdmin(user.id);
@@ -54,7 +48,7 @@ export async function createProduct(
     };
 
     // 4. SKU/바코드 자동 생성 (패턴 A)
-    let prefix = "GEN";
+    let prefix = 'GEN';
     if (validatedData.categoryId) {
       const cat = await db.query.productCategories.findFirst({
         where: eq(productCategories.id, validatedData.categoryId),
@@ -65,8 +59,8 @@ export async function createProduct(
     }
 
     // 고유성 보장 시도 (최대 5회)
-    let sku = "";
-    let barcode = "";
+    let sku = '';
+    let barcode = '';
     for (let i = 0; i < 5; i++) {
       const candidateSku = generateSku(prefix);
       const candidateBarcode = generateEan13();
@@ -87,7 +81,7 @@ export async function createProduct(
     if (!sku || !barcode) {
       return {
         success: false,
-        error: "식별자 생성 실패: 잠시 후 다시 시도해 주세요",
+        error: '식별자 생성 실패: 잠시 후 다시 시도해 주세요',
       };
     }
 
@@ -101,9 +95,7 @@ export async function createProduct(
           sku,
           barcode,
           publishedAt:
-            validatedData.isPublished && validatedData.status === "active"
-              ? new Date()
-              : null,
+            validatedData.isPublished && validatedData.status === 'active' ? new Date() : null,
         })
         .returning({ id: products.id });
 
@@ -123,16 +115,16 @@ export async function createProduct(
     });
 
     // 6. 캐시 재검증
-    revalidatePath("/admin/products");
+    revalidatePath('/admin/products');
     // 스토어프론트 홈 페이지 갱신
-    revalidatePath("/");
+    revalidatePath('/');
 
     return {
       success: true,
       data: { id: result.id },
     };
   } catch (error) {
-    console.error("상품 등록 실패:", error);
+    console.error('상품 등록 실패:', error);
 
     if (error instanceof Error) {
       return {
@@ -143,7 +135,7 @@ export async function createProduct(
 
     return {
       success: false,
-      error: "상품 등록 중 오류가 발생했습니다",
+      error: '상품 등록 중 오류가 발생했습니다',
     };
   }
 }
@@ -162,7 +154,7 @@ export async function updateProduct(
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return { success: false, error: "인증이 필요합니다" };
+      return { success: false, error: '인증이 필요합니다' };
     }
 
     await requireAdmin(user.id);
@@ -182,9 +174,7 @@ export async function updateProduct(
         .set({
           ...rest,
           publishedAt:
-            validatedData.isPublished && validatedData.status === "active"
-              ? new Date()
-              : null,
+            validatedData.isPublished && validatedData.status === 'active' ? new Date() : null,
           updatedAt: new Date(),
         })
         .where(eq(products.id, id));
@@ -205,10 +195,10 @@ export async function updateProduct(
     });
 
     // 4. 캐시 재검증
-    revalidatePath("/admin/products");
+    revalidatePath('/admin/products');
     revalidatePath(`/admin/products/${id}`);
     // 스토어프론트 홈 페이지 갱신
-    revalidatePath("/");
+    revalidatePath('/');
     // 스토어프론트 상세 페이지 갱신
     revalidatePath(`/products/${id}`);
 
@@ -217,7 +207,7 @@ export async function updateProduct(
       data: { id },
     };
   } catch (error) {
-    console.error("상품 수정 실패:", error);
+    console.error('상품 수정 실패:', error);
 
     if (error instanceof Error) {
       return {
@@ -228,7 +218,7 @@ export async function updateProduct(
 
     return {
       success: false,
-      error: "상품 수정 중 오류가 발생했습니다",
+      error: '상품 수정 중 오류가 발생했습니다',
     };
   }
 }
@@ -236,9 +226,7 @@ export async function updateProduct(
 /**
  * 상품 삭제 서버 액션
  */
-export async function deleteProduct(
-  productId: string,
-): Promise<ActionResult<void>> {
+export async function deleteProduct(productId: string): Promise<ActionResult<void>> {
   try {
     // 1. 관리자 권한 확인
     const supabase = await createClient();
@@ -247,7 +235,7 @@ export async function deleteProduct(
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return { success: false, error: "인증이 필요합니다" };
+      return { success: false, error: '인증이 필요합니다' };
     }
 
     await requireAdmin(user.id);
@@ -256,16 +244,16 @@ export async function deleteProduct(
     await db.delete(products).where(eq(products.id, productId));
 
     // 3. 캐시 재검증
-    revalidatePath("/admin/products");
+    revalidatePath('/admin/products');
     // 스토어프론트 홈 페이지 갱신
-    revalidatePath("/");
+    revalidatePath('/');
 
     return {
       success: true,
       data: undefined,
     };
   } catch (error) {
-    console.error("상품 삭제 실패:", error);
+    console.error('상품 삭제 실패:', error);
 
     if (error instanceof Error) {
       return {
@@ -276,7 +264,7 @@ export async function deleteProduct(
 
     return {
       success: false,
-      error: "상품 삭제 중 오류가 발생했습니다",
+      error: '상품 삭제 중 오류가 발생했습니다',
     };
   }
 }
@@ -296,7 +284,7 @@ export async function toggleProductStatus(
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return { success: false, error: "인증이 필요합니다" };
+      return { success: false, error: '인증이 필요합니다' };
     }
 
     await requireAdmin(user.id);
@@ -312,10 +300,10 @@ export async function toggleProductStatus(
       .where(eq(products.id, productId));
 
     // 3. 캐시 재검증
-    revalidatePath("/admin/products");
+    revalidatePath('/admin/products');
     revalidatePath(`/admin/products/${productId}`);
     // 스토어프론트 홈 페이지 갱신
-    revalidatePath("/");
+    revalidatePath('/');
     // 스토어프론트 상세 페이지 갱신
     revalidatePath(`/products/${productId}`);
 
@@ -324,7 +312,7 @@ export async function toggleProductStatus(
       data: undefined,
     };
   } catch (error) {
-    console.error("상품 상태 변경 실패:", error);
+    console.error('상품 상태 변경 실패:', error);
 
     if (error instanceof Error) {
       return {
@@ -335,7 +323,7 @@ export async function toggleProductStatus(
 
     return {
       success: false,
-      error: "상품 상태 변경 중 오류가 발생했습니다",
+      error: '상품 상태 변경 중 오류가 발생했습니다',
     };
   }
 }
@@ -347,9 +335,7 @@ type UploadResult =
 /**
  * 상품 이미지 업로드 서버 액션
  */
-export async function uploadProductImage(
-  formData: FormData,
-): Promise<UploadResult> {
+export async function uploadProductImage(formData: FormData): Promise<UploadResult> {
   try {
     // 1. 관리자 권한 확인
     const supabase = await createClient();
@@ -358,48 +344,46 @@ export async function uploadProductImage(
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return { success: false, error: "인증이 필요합니다" };
+      return { success: false, error: '인증이 필요합니다' };
     }
 
     await requireAdmin(user.id);
 
     // 2. 파일 추출
-    const file = formData.get("file") as File;
+    const file = formData.get('file') as File;
     if (!file) {
-      return { success: false, error: "파일이 없습니다" };
+      return { success: false, error: '파일이 없습니다' };
     }
 
     // 3. 파일 검증
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
-      return { success: false, error: "파일 크기는 5MB를 초과할 수 없습니다" };
+      return { success: false, error: '파일 크기는 5MB를 초과할 수 없습니다' };
     }
 
-    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
       return {
         success: false,
-        error: "지원하지 않는 파일 형식입니다 (JPG, PNG, WebP만 가능)",
+        error: '지원하지 않는 파일 형식입니다 (JPG, PNG, WebP만 가능)',
       };
     }
 
     // 4. 파일명 생성 (타임스탬프 + 랜덤 문자열)
     const timestamp = Date.now();
     const randomStr = Math.random().toString(36).substring(2, 15);
-    const extension = file.name.split(".").pop();
+    const extension = file.name.split('.').pop();
     const fileName = `${timestamp}-${randomStr}.${extension}`;
     const filePath = `products/${fileName}`;
 
     // 5. Supabase Storage에 업로드
-    const { data, error } = await supabase.storage
-      .from("product-images")
-      .upload(filePath, file, {
-        cacheControl: "3600",
-        upsert: false,
-      });
+    const { data, error } = await supabase.storage.from('product-images').upload(filePath, file, {
+      cacheControl: '3600',
+      upsert: false,
+    });
 
     if (error) {
-      console.error("이미지 업로드 실패:", error);
+      console.error('이미지 업로드 실패:', error);
       return {
         success: false,
         error: `업로드 실패: ${error.message}`,
@@ -409,7 +393,7 @@ export async function uploadProductImage(
     // 6. 공개 URL 생성
     const {
       data: { publicUrl },
-    } = supabase.storage.from("product-images").getPublicUrl(data.path);
+    } = supabase.storage.from('product-images').getPublicUrl(data.path);
 
     return {
       success: true,
@@ -417,7 +401,7 @@ export async function uploadProductImage(
       path: data.path,
     };
   } catch (error) {
-    console.error("이미지 업로드 오류:", error);
+    console.error('이미지 업로드 오류:', error);
 
     if (error instanceof Error) {
       return {
@@ -428,7 +412,7 @@ export async function uploadProductImage(
 
     return {
       success: false,
-      error: "이미지 업로드 중 오류가 발생했습니다",
+      error: '이미지 업로드 중 오류가 발생했습니다',
     };
   }
 }
@@ -447,18 +431,16 @@ export async function deleteProductImage(
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return { success: false, error: "인증이 필요합니다" };
+      return { success: false, error: '인증이 필요합니다' };
     }
 
     await requireAdmin(user.id);
 
     // 2. Supabase Storage에서 삭제
-    const { error } = await supabase.storage
-      .from("product-images")
-      .remove([filePath]);
+    const { error } = await supabase.storage.from('product-images').remove([filePath]);
 
     if (error) {
-      console.error("이미지 삭제 실패:", error);
+      console.error('이미지 삭제 실패:', error);
       return {
         success: false,
         error: `삭제 실패: ${error.message}`,
@@ -467,7 +449,7 @@ export async function deleteProductImage(
 
     return { success: true };
   } catch (error) {
-    console.error("이미지 삭제 오류:", error);
+    console.error('이미지 삭제 오류:', error);
 
     if (error instanceof Error) {
       return {
@@ -478,7 +460,7 @@ export async function deleteProductImage(
 
     return {
       success: false,
-      error: "이미지 삭제 중 오류가 발생했습니다",
+      error: '이미지 삭제 중 오류가 발생했습니다',
     };
   }
 }

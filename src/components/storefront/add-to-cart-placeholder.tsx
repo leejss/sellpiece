@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import React from "react";
-import { useFormStatus } from "react-dom";
-import { SizeSelector } from "./size-selector";
-import { QuantitySelector } from "./quantity-selector";
+import React from 'react';
+import { useFormStatus } from 'react-dom';
+import { SizeSelector } from './size-selector';
+import { QuantitySelector } from './quantity-selector';
 
 type Props = {
   productId: string;
@@ -16,11 +16,11 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="w-full h-12 border border-black text-black uppercase tracking-wider text-sm disabled:opacity-40"
+      className="h-12 w-full border border-black text-sm tracking-wider text-black uppercase disabled:opacity-40"
       aria-disabled={pending}
-      title={pending ? "Adding..." : "Add to cart"}
+      title={pending ? 'Adding...' : 'Add to cart'}
     >
-      {pending ? "Adding..." : "Add to cart"}
+      {pending ? 'Adding...' : 'Add to cart'}
     </button>
   );
 }
@@ -32,7 +32,7 @@ export function AddToCartPlaceholder({ productId, action }: Props) {
       <SizeSelector />
       <QuantitySelector />
       <SubmitButton />
-      <p className="text-[10px] sm:text-xs text-gray-400">
+      <p className="text-[10px] text-gray-400 sm:text-xs">
         Minimal demo. Cart/size options will be wired via server actions.
       </p>
     </form>

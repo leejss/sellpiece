@@ -1,4 +1,4 @@
-type AuthMode = "login" | "signup";
+type AuthMode = 'login' | 'signup';
 
 type AuthState = {
   error?: string;
@@ -13,24 +13,24 @@ type AuthFormProps<T extends AuthState> = {
 
 const AUTH_CONFIG = {
   login: {
-    title: "SIGN IN",
-    submitText: "SIGN IN",
-    submitPendingText: "SIGNING IN...",
+    title: 'SIGN IN',
+    submitText: 'SIGN IN',
+    submitPendingText: 'SIGNING IN...',
     footerText: "DON'T HAVE AN ACCOUNT?",
-    footerLinkText: "SIGN UP",
-    footerLinkHref: "/signup",
+    footerLinkText: 'SIGN UP',
+    footerLinkHref: '/signup',
     showConfirmPassword: false,
-    passwordAutoComplete: "current-password",
+    passwordAutoComplete: 'current-password',
   },
   signup: {
-    title: "CREATE ACCOUNT",
-    submitText: "CREATE ACCOUNT",
-    submitPendingText: "CREATING ACCOUNT...",
-    footerText: "ALREADY HAVE AN ACCOUNT?",
-    footerLinkText: "SIGN IN",
-    footerLinkHref: "/login",
+    title: 'CREATE ACCOUNT',
+    submitText: 'CREATE ACCOUNT',
+    submitPendingText: 'CREATING ACCOUNT...',
+    footerText: 'ALREADY HAVE AN ACCOUNT?',
+    footerLinkText: 'SIGN IN',
+    footerLinkHref: '/login',
     showConfirmPassword: true,
-    passwordAutoComplete: "new-password",
+    passwordAutoComplete: 'new-password',
   },
 } as const;
 
@@ -51,7 +51,7 @@ export function AuthForm<T extends AuthState>({
           <div>
             <label
               htmlFor="email"
-              className="mb-2 block font-mono text-xs uppercase tracking-wider text-black"
+              className="mb-2 block font-mono text-xs tracking-wider text-black uppercase"
             >
               EMAIL
             </label>
@@ -70,7 +70,7 @@ export function AuthForm<T extends AuthState>({
           <div>
             <label
               htmlFor="password"
-              className="mb-2 block font-mono text-xs uppercase tracking-wider text-black"
+              className="mb-2 block font-mono text-xs tracking-wider text-black uppercase"
             >
               PASSWORD
             </label>
@@ -90,7 +90,7 @@ export function AuthForm<T extends AuthState>({
             <div>
               <label
                 htmlFor="confirmPassword"
-                className="mb-2 block font-mono text-xs uppercase tracking-wider text-black"
+                className="mb-2 block font-mono text-xs tracking-wider text-black uppercase"
               >
                 CONFIRM PASSWORD
               </label>
@@ -117,7 +117,7 @@ export function AuthForm<T extends AuthState>({
           <button
             type="submit"
             disabled={isPending}
-            className="w-full border border-black bg-white px-4 py-3 font-mono text-sm uppercase tracking-wider text-black transition-colors hover:bg-black hover:text-white disabled:opacity-50 disabled:hover:bg-black disabled:hover:text-white"
+            className="w-full border border-black bg-white px-4 py-3 font-mono text-sm tracking-wider text-black uppercase transition-colors hover:bg-black hover:text-white disabled:opacity-50 disabled:hover:bg-black disabled:hover:text-white"
           >
             {isPending ? config.submitPendingText : config.submitText}
           </button>
@@ -126,11 +126,8 @@ export function AuthForm<T extends AuthState>({
         {/* Footer Links */}
         <div className="mt-8 text-center">
           <p className="font-mono text-xs text-gray-600">
-            {config.footerText}{" "}
-            <a
-              href={config.footerLinkHref}
-              className="text-black underline hover:no-underline"
-            >
+            {config.footerText}{' '}
+            <a href={config.footerLinkHref} className="text-black underline hover:no-underline">
               {config.footerLinkText}
             </a>
           </p>

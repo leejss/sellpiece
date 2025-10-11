@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
-import type { ReactNode } from "react";
-import { AdminMobileDrawer } from "@/components/admin/admin-mobile-drawer";
-import { AdminAside } from "@/components/admin/admin-aside";
+import type { Metadata } from 'next';
+import type { ReactNode } from 'react';
+import { AdminMobileDrawer } from '@/components/admin/admin-mobile-drawer';
+import { AdminAside } from '@/components/admin/admin-aside';
 
 export const metadata: Metadata = {
-  title: "Admin - Sellpiece",
-  description: "Minimal admin interface",
+  title: 'Admin - Sellpiece',
+  description: 'Minimal admin interface',
 };
 
 export default function AdminLayout({
@@ -16,7 +16,7 @@ export default function AdminLayout({
   return (
     <div className="min-h-screen bg-white">
       {/* Mobile Header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
+      <header className="fixed top-0 right-0 left-0 z-50 border-b border-gray-100 bg-white lg:hidden">
         <AdminMobileDrawer />
       </header>
 
@@ -24,7 +24,7 @@ export default function AdminLayout({
       <AdminAside />
 
       {/* Main Content */}
-      <main className="pt-16 lg:pt-0 lg:ml-64">{children}</main>
+      <main className="pt-16 lg:ml-64 lg:pt-0">{children}</main>
     </div>
   );
 }

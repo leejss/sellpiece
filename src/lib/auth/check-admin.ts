@@ -1,6 +1,6 @@
-import { db } from "@/lib/db";
-import { admins } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { db } from '@/lib/db';
+import { admins } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
 
 /**
  * DB 조회로 정확한 관리자 체크
@@ -44,6 +44,6 @@ export async function getAdminInfo(userId: string) {
 export async function requireAdmin(userId: string): Promise<void> {
   const isAdmin = await isAdminFromDB(userId);
   if (!isAdmin) {
-    throw new Error("Unauthorized: Admin access required");
+    throw new Error('Unauthorized: Admin access required');
   }
 }

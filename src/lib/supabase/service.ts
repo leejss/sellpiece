@@ -10,18 +10,14 @@
  * - Keep the key in environment variables (Vercel/Node) and do not log it.
  */
 
-import { env } from "@env/server";
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { env } from '@env/server';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 export function createServiceClient(): SupabaseClient {
   // Note: We intentionally do not set auth persist options since this runs server-side.
-  return createClient(
-    env.NEXT_PUBLIC_SUPABASE_URL,
-    env.SUPABASE_SERVICE_ROLE_KEY,
-    {
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false,
-      },
+  return createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
     },
-  );
+  });
 }

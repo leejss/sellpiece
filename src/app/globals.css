@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   --background: #ffffff;
@@ -26,30 +26,30 @@ body {
 }
 
 @utility typ-title {
-  @apply text-2xl sm:text-3xl font-semibold leading-snug;
+  @apply text-2xl leading-snug font-semibold sm:text-3xl;
 }
 
 @utility typ-subtitle {
-  @apply text-xl sm:text-2xl font-medium leading-snug;
+  @apply text-xl leading-snug font-medium sm:text-2xl;
 }
 
 @utility typ-body {
-  @apply text-lg sm:text-xl leading-relaxed;
+  @apply text-lg leading-relaxed sm:text-xl;
 }
 
 @utility typ-caption {
-  @apply text-base sm:text-lg text-gray-500 tracking-wide;
+  @apply text-base tracking-wide text-gray-500 sm:text-lg;
 }
 
 @utility typ-meta {
-  @apply text-sm sm:text-base text-gray-600 uppercase tracking-wider;
+  @apply text-sm tracking-wider text-gray-600 uppercase sm:text-base;
 }
 
 /* CTA와 링크용 보조 타이포 유틸리티 */
 @utility typ-cta {
-  @apply text-base sm:text-lg tracking-wider;
+  @apply text-base tracking-wider sm:text-lg;
 }
 
 @utility typ-link {
-  @apply text-base sm:text-lg underline hover:no-underline;
+  @apply text-base underline hover:no-underline sm:text-lg;
 }

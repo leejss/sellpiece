@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
-import { createClient } from "../supabase/server";
+import { redirect } from 'next/navigation';
+import { createClient } from '../supabase/server';
 
 export async function getCurrentUserId() {
   const client = await createClient();
@@ -14,7 +14,7 @@ export async function getCurrentUserId() {
 export async function requireUserId() {
   const userId = await getCurrentUserId();
   if (!userId) {
-    redirect("/login");
+    redirect('/login');
   }
 
   return userId;

@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { FormProvider, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { updateProduct } from "@/actions/admin/product";
+import { useRouter } from 'next/navigation';
+import { FormProvider, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { updateProduct } from '@/actions/admin/product';
 import {
   updateProductSchema,
   type UpdateProductInput,
   ProductStatus,
-} from "@/lib/validations/product";
-import { BaseProductForm, type ProductFormValuesBase } from "./base-product-form";
-import type { ProductWithImages } from "@/lib/db/queries/admin/product";
+} from '@/lib/validations/product';
+import { BaseProductForm, type ProductFormValuesBase } from './base-product-form';
+import type { ProductWithImages } from '@/lib/db/queries/admin/product';
 
 type Category = {
   id: string;
@@ -37,15 +37,15 @@ export function ProductUpdateForm({ product, categories }: Props) {
     defaultValues: {
       id: product.id,
       name: product.name,
-      description: product.description ?? "",
+      description: product.description ?? '',
       price: product.price as unknown as string,
       stock: product.stock,
-      categoryId: product.categoryId ?? "",
+      categoryId: product.categoryId ?? '',
       status: product.status as (typeof ProductStatus)[keyof typeof ProductStatus],
       isPublished: product.isPublished,
       images: product.images.map((img) => ({
         url: img.url,
-        altText: img.altText ?? "",
+        altText: img.altText ?? '',
         position: img.position,
       })),
     },
@@ -56,14 +56,14 @@ export function ProductUpdateForm({ product, categories }: Props) {
       const result = await updateProduct(data as unknown as UpdateProductInput);
 
       if (result.success) {
-        router.push("/admin/products");
+        router.push('/admin/products');
         router.refresh();
       } else {
         alert(result.error);
       }
     } catch (err) {
       console.error(err);
-      alert("상품 수정 중 오류가 발생했습니다");
+      alert('상품 수정 중 오류가 발생했습니다');
     }
   };
 
@@ -76,23 +76,19 @@ export function ProductUpdateForm({ product, categories }: Props) {
       <form onSubmit={methods.handleSubmit(onSubmit as any)} className="space-y-8">
         {/* Readonly identifiers */}
         <section className="space-y-2">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <p className="text-xs uppercase tracking-wide text-gray-500 mb-1">SKU</p>
-              <p className="font-mono text-sm select-all">{product.sku ?? "-"}</p>
+              <p className="mb-1 text-xs tracking-wide text-gray-500 uppercase">SKU</p>
+              <p className="font-mono text-sm select-all">{product.sku ?? '-'}</p>
             </div>
             <div>
-              <p className="text-xs uppercase tracking-wide text-gray-500 mb-1">Barcode</p>
-              <p className="font-mono text-sm select-all">{product.barcode ?? "-"}</p>
+              <p className="mb-1 text-xs tracking-wide text-gray-500 uppercase">Barcode</p>
+              <p className="font-mono text-sm select-all">{product.barcode ?? '-'}</p>
             </div>
           </div>
         </section>
 
-        <BaseProductForm
-          submitLabel="상품 수정"
-          categories={categories}
-          onCancel={handleCancel}
-        />
+        <BaseProductForm submitLabel="상품 수정" categories={categories} onCancel={handleCancel} />
       </form>
     </FormProvider>
   );

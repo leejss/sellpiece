@@ -74,16 +74,12 @@
         "admins_auth_user_id_unique": {
           "name": "admins_auth_user_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "auth_user_id"
-          ]
+          "columns": ["auth_user_id"]
         },
         "admins_email_unique": {
           "name": "admins_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},
@@ -148,16 +144,12 @@
         "product_categories_name_unique": {
           "name": "product_categories_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
+          "columns": ["name"]
         },
         "product_categories_slug_unique": {
           "name": "product_categories_slug_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "slug"
-          ]
+          "columns": ["slug"]
         }
       },
       "policies": {},
@@ -251,12 +243,8 @@
           "name": "product_images_product_id_products_id_fk",
           "tableFrom": "product_images",
           "tableTo": "products",
-          "columnsFrom": [
-            "product_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["product_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -426,12 +414,8 @@
           "name": "products_category_id_product_categories_id_fk",
           "tableFrom": "products",
           "tableTo": "product_categories",
-          "columnsFrom": [
-            "category_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["category_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -441,9 +425,7 @@
         "products_slug_unique": {
           "name": "products_slug_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "slug"
-          ]
+          "columns": ["slug"]
         }
       },
       "policies": {},
@@ -487,9 +469,7 @@
         "users_auth_user_id_unique": {
           "name": "users_auth_user_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "auth_user_id"
-          ]
+          "columns": ["auth_user_id"]
         }
       },
       "policies": {},

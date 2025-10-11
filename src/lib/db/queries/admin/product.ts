@@ -1,6 +1,6 @@
-import { db } from "@/lib/db";
-import { products, productImages, productCategories } from "@/lib/db/schema";
-import { eq, desc, asc, like, and, or, sql } from "drizzle-orm";
+import { db } from '@/lib/db';
+import { products, productImages, productCategories } from '@/lib/db/schema';
+import { eq, desc, asc, like, and, or, sql } from 'drizzle-orm';
 
 export type ProductWithImages = typeof products.$inferSelect & {
   images: (typeof productImages.$inferSelect)[];
@@ -18,8 +18,8 @@ export type GetProductsParams = {
   search?: string;
   status?: string;
   categoryId?: string;
-  sortBy?: "createdAt" | "updatedAt" | "name" | "price";
-  sortOrder?: "asc" | "desc";
+  sortBy?: 'createdAt' | 'updatedAt' | 'name' | 'price';
+  sortOrder?: 'asc' | 'desc';
 };
 
 /**
@@ -32,8 +32,8 @@ export async function getProducts(params: GetProductsParams = {}) {
     search,
     status,
     categoryId,
-    sortBy = "createdAt",
-    sortOrder = "desc",
+    sortBy = 'createdAt',
+    sortOrder = 'desc',
   } = params;
 
   const offset = (page - 1) * limit;
@@ -63,8 +63,7 @@ export async function getProducts(params: GetProductsParams = {}) {
 
   // 정렬 조건
   const orderByColumn = products[sortBy];
-  const orderByClause =
-    sortOrder === "asc" ? asc(orderByColumn) : desc(orderByColumn);
+  const orderByClause = sortOrder === 'asc' ? asc(orderByColumn) : desc(orderByColumn);
 
   // 데이터 조회
   const [productList, totalCountResult] = await Promise.all([
@@ -87,10 +86,7 @@ export async function getProducts(params: GetProductsParams = {}) {
         imageCount: sql<number>`count(${productImages.id})::int`,
       })
       .from(products)
-      .leftJoin(
-        productCategories,
-        eq(products.categoryId, productCategories.id),
-      )
+      .leftJoin(productCategories, eq(products.categoryId, productCategories.id))
       .leftJoin(productImages, eq(products.id, productImages.productId))
       .where(whereClause)
       .groupBy(products.id, productCategories.name)
@@ -122,9 +118,7 @@ export async function getProducts(params: GetProductsParams = {}) {
 /**
  * 상품 상세 조회 (이미지 및 카테고리 포함)
  */
-export async function getProductById(
-  productId: string,
-): Promise<ProductWithImages | null> {
+export async function getProductById(productId: string): Promise<ProductWithImages | null> {
   try {
     const product = await db.query.products.findFirst({
       where: eq(products.id, productId),
@@ -138,7 +132,7 @@ export async function getProductById(
 
     return product ?? null;
   } catch (error) {
-    console.error("상품 조회 실패:", error);
+    console.error('상품 조회 실패:', error);
     return null;
   }
 }
@@ -155,15 +149,12 @@ export async function getProductCountByCategory() {
         count: sql<number>`count(*)::int`,
       })
       .from(products)
-      .leftJoin(
-        productCategories,
-        eq(products.categoryId, productCategories.id),
-      )
+      .leftJoin(productCategories, eq(products.categoryId, productCategories.id))
       .groupBy(products.categoryId, productCategories.name);
 
     return result;
   } catch (error) {
-    console.error("카테고리별 상품 개수 조회 실패:", error);
+    console.error('카테고리별 상품 개수 조회 실패:', error);
     return [];
   }
 }
@@ -184,7 +175,7 @@ export async function getProductStats() {
 
     return stats;
   } catch (error) {
-    console.error("상품 통계 조회 실패:", error);
+    console.error('상품 통계 조회 실패:', error);
     return {
       totalProducts: 0,
       publishedProducts: 0,

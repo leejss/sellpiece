@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
-import { createServerClient } from "@supabase/ssr";
-import { env } from "@env/client";
-import { User } from "@supabase/supabase-js";
+import { NextRequest, NextResponse } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
+import { env } from '@env/client';
+import { User } from '@supabase/supabase-js';
 
-const USER_PROTECTED_ROUTE = ["/cart"];
-const ADMIN_PROTECTED_ROUTE = ["/admin"];
+const USER_PROTECTED_ROUTE = ['/cart'];
+const ADMIN_PROTECTED_ROUTE = ['/admin'];
 
 function isUserProtectedRoute(pathname: string) {
   return USER_PROTECTED_ROUTE.some((r) => pathname.startsWith(r));
@@ -49,18 +49,18 @@ export async function middleware(request: NextRequest) {
 
   if (!user) {
     if (isAdminProtectedRoute(pathname)) {
-      return NextResponse.redirect(new URL("/unauthorized", request.url));
+      return NextResponse.redirect(new URL('/unauthorized', request.url));
     }
 
     if (isUserProtectedRoute(pathname)) {
-      return NextResponse.redirect(new URL("/login", request.url));
+      return NextResponse.redirect(new URL('/login', request.url));
     }
   }
 
   // 인증 + check admin
   const isAdmin = isAdminFromToken(user);
   if (isAdminProtectedRoute(pathname) && !isAdmin) {
-    return NextResponse.redirect(new URL("/unauthorized", request.url));
+    return NextResponse.redirect(new URL('/unauthorized', request.url));
   }
 
   return response;
@@ -75,7 +75,7 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public files (public folder)
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };
 

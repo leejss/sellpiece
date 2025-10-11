@@ -1,6 +1,6 @@
-import { db } from "@/lib/db";
-import { products, productImages, productCategories } from "@/lib/db/schema";
-import { eq, desc, and } from "drizzle-orm";
+import { db } from '@/lib/db';
+import { products, productImages, productCategories } from '@/lib/db/schema';
+import { eq, desc, and } from 'drizzle-orm';
 
 /**
  * 공개된 상품 목록 조회 (스토어프론트용)
@@ -20,16 +20,8 @@ export async function getPublishedProducts(limit: number = 20) {
         publishedAt: products.publishedAt,
       })
       .from(products)
-      .leftJoin(
-        productCategories,
-        eq(products.categoryId, productCategories.id),
-      )
-      .where(
-        and(
-          eq(products.isPublished, true),
-          eq(products.status, "active"),
-        ),
-      )
+      .leftJoin(productCategories, eq(products.categoryId, productCategories.id))
+      .where(and(eq(products.isPublished, true), eq(products.status, 'active')))
       .orderBy(desc(products.publishedAt))
       .limit(limit);
 
@@ -55,7 +47,7 @@ export async function getPublishedProducts(limit: number = 20) {
 
     return productsWithImages;
   } catch (error) {
-    console.error("공개 상품 조회 실패:", error);
+    console.error('공개 상품 조회 실패:', error);
     return [];
   }
 }
@@ -69,7 +61,7 @@ export async function getPublishedProductById(id: string) {
       where: and(
         eq(products.id, id),
         eq(products.isPublished, true),
-        eq(products.status, "active"),
+        eq(products.status, 'active'),
       ),
       with: {
         images: {
@@ -81,7 +73,7 @@ export async function getPublishedProductById(id: string) {
 
     return product ?? null;
   } catch (error) {
-    console.error("상품 상세 조회 실패:", error);
+    console.error('상품 상세 조회 실패:', error);
     return null;
   }
 }
@@ -89,10 +81,7 @@ export async function getPublishedProductById(id: string) {
 /**
  * 카테고리별 공개 상품 조회
  */
-export async function getPublishedProductsByCategory(
-  categoryId: string,
-  limit: number = 20,
-) {
+export async function getPublishedProductsByCategory(categoryId: string, limit: number = 20) {
   try {
     const productList = await db
       .select({
@@ -107,15 +96,12 @@ export async function getPublishedProductsByCategory(
         publishedAt: products.publishedAt,
       })
       .from(products)
-      .leftJoin(
-        productCategories,
-        eq(products.categoryId, productCategories.id),
-      )
+      .leftJoin(productCategories, eq(products.categoryId, productCategories.id))
       .where(
         and(
           eq(products.categoryId, categoryId),
           eq(products.isPublished, true),
-          eq(products.status, "active"),
+          eq(products.status, 'active'),
         ),
       )
       .orderBy(desc(products.publishedAt))
@@ -142,7 +128,7 @@ export async function getPublishedProductsByCategory(
 
     return productsWithImages;
   } catch (error) {
-    console.error("카테고리별 상품 조회 실패:", error);
+    console.error('카테고리별 상품 조회 실패:', error);
     return [];
   }
 }

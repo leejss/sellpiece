@@ -1,6 +1,6 @@
-import { db } from "@/lib/db";
-import { productCategories, products } from "@/lib/db/schema";
-import { eq, desc, sql } from "drizzle-orm";
+import { db } from '@/lib/db';
+import { productCategories, products } from '@/lib/db/schema';
+import { eq, desc, sql } from 'drizzle-orm';
 
 export type CategoryWithProductCount = typeof productCategories.$inferSelect & {
   productCount: number;
@@ -29,7 +29,7 @@ export async function getCategories(): Promise<CategoryWithProductCount[]> {
 
     return categories;
   } catch (error) {
-    console.error("카테고리 조회 실패:", error);
+    console.error('카테고리 조회 실패:', error);
     return [];
   }
 }
@@ -46,7 +46,7 @@ export async function getActiveCategories() {
 
     return categories;
   } catch (error) {
-    console.error("활성 카테고리 조회 실패:", error);
+    console.error('활성 카테고리 조회 실패:', error);
     return [];
   }
 }
@@ -62,7 +62,7 @@ export async function getCategoryById(categoryId: string) {
 
     return category ?? null;
   } catch (error) {
-    console.error("카테고리 조회 실패:", error);
+    console.error('카테고리 조회 실패:', error);
     return null;
   }
 }

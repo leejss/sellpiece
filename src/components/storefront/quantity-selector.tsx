@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import React from "react";
+import React from 'react';
 
 export function QuantitySelector() {
   return (
     <div className="flex items-center gap-3">
-      <label htmlFor="quantity" className="text-xs uppercase tracking-wider text-gray-500">
+      <label htmlFor="quantity" className="text-xs tracking-wider text-gray-500 uppercase">
         Qty
       </label>
       <input
@@ -15,7 +15,7 @@ export function QuantitySelector() {
         min={1}
         max={10}
         defaultValue={1}
-        className="w-20 h-10 border border-gray-200 px-3 text-sm"
+        className="h-10 w-20 border border-gray-200 px-3 text-sm"
       />
     </div>
   );

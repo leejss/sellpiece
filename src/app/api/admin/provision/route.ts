@@ -1,13 +1,13 @@
-import { NextResponse } from "next/server";
-import crypto from "node:crypto";
-import type { SupabaseClient } from "@supabase/supabase-js";
-import { createServiceClient } from "@/lib/supabase/service";
-import { db } from "@/lib/db";
-import { admins } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
-import { env } from "@env/server";
+import { NextResponse } from 'next/server';
+import crypto from 'node:crypto';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { createServiceClient } from '@/lib/supabase/service';
+import { db } from '@/lib/db';
+import { admins } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
+import { env } from '@env/server';
 
-export const runtime = "nodejs";
+export const runtime = 'nodejs';
 
 interface ProvisionRequestBody {
   email: string;
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
   try {
     // 1. Authentication
     if (!verifyProvisionSecret(req)) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await safeParseRequest(req);
@@ -48,11 +48,8 @@ export async function POST(req: Request) {
       isNewUser,
     });
   } catch (e) {
-    console.error("Provision error", e);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 },
-    );
+    console.error('Provision error', e);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
 
@@ -102,32 +99,32 @@ async function findOrCreateAuthUser(
     email_confirm: true,
     user_metadata: fullName ? { fullName } : undefined,
     app_metadata: {
-      role: "admin",
+      role: 'admin',
       isAdmin: true,
     },
   });
 
-  if (error?.code === "user_already_exists") {
+  if (error?.code === 'user_already_exists') {
     const userId = await getUserIdByEmail(svc, email);
     if (!userId) {
-      throw new Error("User exists but could not retrieve ID");
+      throw new Error('User exists but could not retrieve ID');
     }
     return { userId, isNewUser: false };
   }
 
   // Other errors - actual failures
   if (error) {
-    console.error("createUser failed", {
+    console.error('createUser failed', {
       code: error.code,
       message: error.message,
     });
-    throw new Error("Failed to create auth user");
+    throw new Error('Failed to create auth user');
   }
 
   // Success - new user created
   const userId = data.user?.id;
   if (!userId) {
-    throw new Error("User created but ID is missing");
+    throw new Error('User created but ID is missing');
   }
 
   return { userId, isNewUser: true };
@@ -137,10 +134,7 @@ async function findOrCreateAuthUser(
  * Retrieves user ID by email using listUsers with pagination.
  * More efficient than loading all users at once.
  */
-async function getUserIdByEmail(
-  svc: SupabaseClient,
-  email: string,
-): Promise<string | null> {
+async function getUserIdByEmail(svc: SupabaseClient, email: string): Promise<string | null> {
   const normalizedEmail = email.toLowerCase();
   let page = 1;
   const perPage = 100;
@@ -154,9 +148,7 @@ async function getUserIdByEmail(
 
     if (error || !data) break;
 
-    const found = data.users.find(
-      (u) => u.email?.toLowerCase() === normalizedEmail,
-    );
+    const found = data.users.find((u) => u.email?.toLowerCase() === normalizedEmail);
     if (found) return found.id;
 
     // No more pages
@@ -171,11 +163,7 @@ async function getUserIdByEmail(
  * Ensures admin record exists in database.
  * Idempotent: does nothing if record already exists.
  */
-async function ensureAdminRecord(
-  userId: string,
-  email: string,
-  fullName?: string,
-): Promise<void> {
+async function ensureAdminRecord(userId: string, email: string, fullName?: string): Promise<void> {
   const existing = await db
     .select({ id: admins.id })
     .from(admins)
@@ -188,20 +176,17 @@ async function ensureAdminRecord(
       email,
       name: fullName,
       isActive: true,
-      role: "admin",
+      role: 'admin',
     });
   }
 }
 
-async function cleanupAuthUser(
-  svc: SupabaseClient,
-  userId: string,
-): Promise<void> {
+async function cleanupAuthUser(svc: SupabaseClient, userId: string): Promise<void> {
   try {
     await svc.auth.admin.deleteUser(userId);
-    console.info("Rolled back auth user creation", { userId });
+    console.info('Rolled back auth user creation', { userId });
   } catch (error) {
-    console.error("Failed to cleanup auth user", { userId, error });
+    console.error('Failed to cleanup auth user', { userId, error });
   }
 }
 
@@ -211,13 +196,11 @@ async function cleanupAuthUser(
  */
 function verifyProvisionSecret(req: Request): boolean {
   const secret = env.ADMIN_PROVISION_SECRET;
-  const provided = req.headers.get("X-Admin-Provision-Secret");
+  const provided = req.headers.get('X-Admin-Provision-Secret');
   return provided === secret;
 }
 
-async function safeParseRequest(
-  req: Request,
-): Promise<Partial<ProvisionRequestBody>> {
+async function safeParseRequest(req: Request): Promise<Partial<ProvisionRequestBody>> {
   try {
     return await req.json();
   } catch {
@@ -225,29 +208,27 @@ async function safeParseRequest(
   }
 }
 
-function validateRequestBody(
-  body: Partial<ProvisionRequestBody>,
-): string | null {
+function validateRequestBody(body: Partial<ProvisionRequestBody>): string | null {
   const email = sanitizeEmail(body.email);
   if (!email) {
-    return "email is required and must be valid";
+    return 'email is required and must be valid';
   }
   const password = body.password;
   if (!password) {
-    return "password is required";
+    return 'password is required';
   }
 
   return null;
 }
 
 function sanitizeEmail(input: unknown): string | null {
-  if (typeof input !== "string") return null;
+  if (typeof input !== 'string') return null;
   const trimmed = input.trim();
-  if (!trimmed || !trimmed.includes("@")) return null;
+  if (!trimmed || !trimmed.includes('@')) return null;
   return trimmed;
 }
 
 function generateRandomPassword(): string {
   // 16 bytes → 32 hex chars; acceptable as a temporary random password
-  return crypto.randomBytes(16).toString("hex");
+  return crypto.randomBytes(16).toString('hex');
 }

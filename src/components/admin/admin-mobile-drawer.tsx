@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useState } from "react";
-import { adminNavItems } from "@/config/admin/nav-items";
+import Link from 'next/link';
+import { useState } from 'react';
+import { adminNavItems } from '@/config/admin/nav-items';
 
 export function AdminMobileDrawer() {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,15 +15,10 @@ export function AdminMobileDrawer() {
       {/* Hamburger Button */}
       <button
         onClick={toggleDrawer}
-        className="p-2 hover:bg-gray-50 transition rounded"
+        className="rounded p-2 transition hover:bg-gray-50"
         aria-label="메뉴 열기"
       >
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
+        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -34,40 +29,26 @@ export function AdminMobileDrawer() {
       </button>
 
       {/* Overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/20 z-40 lg:hidden"
-          onClick={closeDrawer}
-        />
-      )}
+      {isOpen && <div className="fixed inset-0 z-40 bg-black/20 lg:hidden" onClick={closeDrawer} />}
 
       {/* Drawer */}
       <div
-        className={`fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-100 z-50 transform transition-transform duration-300 ease-in-out lg:hidden ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed top-0 left-0 z-50 h-full w-64 transform border-r border-gray-100 bg-white transition-transform duration-300 ease-in-out lg:hidden ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="p-6">
           {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <Link
-              href="/admin"
-              className="text-xl font-bold tracking-tight"
-              onClick={closeDrawer}
-            >
+          <div className="mb-8 flex items-center justify-between">
+            <Link href="/admin" className="text-xl font-bold tracking-tight" onClick={closeDrawer}>
               ADMIN
             </Link>
             <button
               onClick={closeDrawer}
-              className="p-2 hover:bg-gray-50 transition rounded"
+              className="rounded p-2 transition hover:bg-gray-50"
               aria-label="메뉴 닫기"
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -83,9 +64,9 @@ export function AdminMobileDrawer() {
             {adminNavItems.map((item) => (
               <Link
                 key={item.href}
-                href={item.disabled ? "#" : item.href}
-                className={`block py-3 px-4 text-sm hover:bg-gray-50 transition rounded ${
-                  item.disabled ? "text-gray-400 cursor-not-allowed" : ""
+                href={item.disabled ? '#' : item.href}
+                className={`block rounded px-4 py-3 text-sm transition hover:bg-gray-50 ${
+                  item.disabled ? 'cursor-not-allowed text-gray-400' : ''
                 }`}
                 onClick={(e) => {
                   if (item.disabled) {
@@ -102,10 +83,10 @@ export function AdminMobileDrawer() {
         </div>
 
         {/* Footer */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-gray-100">
+        <div className="absolute right-0 bottom-0 left-0 border-t border-gray-100 p-6">
           <Link
             href="/"
-            className="block text-sm text-gray-500 hover:text-black transition"
+            className="block text-sm text-gray-500 transition hover:text-black"
             onClick={closeDrawer}
           >
             ← Storefront

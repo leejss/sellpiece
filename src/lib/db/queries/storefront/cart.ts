@@ -1,6 +1,6 @@
-import { db } from "@/lib/db";
-import { carts, cartItems } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { db } from '@/lib/db';
+import { carts, cartItems } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
 
 export async function clearCartItems(cartId: string) {
   await db.delete(cartItems).where(eq(cartItems.cartId, cartId));

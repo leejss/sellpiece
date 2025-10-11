@@ -1,9 +1,9 @@
 export default function LoadingProduct() {
   return (
     <div className="min-h-screen bg-white">
-      <section className="px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
-          <div className="order-2 lg:order-1 animate-pulse">
+      <section className="px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
+          <div className="order-2 animate-pulse lg:order-1">
             <div className="h-8 w-2/3 bg-gray-200" />
             <div className="mt-2 h-3 w-24 bg-gray-100" />
             <div className="mt-6 h-6 w-32 bg-gray-200" />
@@ -14,7 +14,7 @@ export default function LoadingProduct() {
             </div>
             <div className="mt-10 h-12 w-full bg-gray-200" />
           </div>
-          <div className="order-1 lg:order-2 animate-pulse">
+          <div className="order-1 animate-pulse lg:order-2">
             <div className="aspect-square bg-gray-100" />
           </div>
         </div>
