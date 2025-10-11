@@ -7,42 +7,44 @@ export default function AdminLoginPage() {
   const [state, formAction, isPending] = useActionState<LoginState, FormData>(loginAction, {});
 
   return (
-    <div className="mx-auto mt-12 w-full max-w-sm">
-      <h1 className="typ-title mb-6 font-semibold">Admin Login</h1>
-      <form action={formAction} className="space-y-4">
-        <div>
-          <label htmlFor="email" className="typ-caption mb-1 block font-medium">
-            Email
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            className="w-full rounded border px-3 py-2"
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="password" className="typ-caption mb-1 block font-medium">
-            Password
-          </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            className="w-full rounded border px-3 py-2"
-            required
-          />
-        </div>
-        {state.error && <p className="typ-caption text-red-500">{state.error}</p>}
-        <button
-          type="submit"
-          disabled={isPending}
-          className="typ-cta w-full rounded bg-blue-600 py-2 text-white disabled:opacity-60"
-        >
-          {isPending ? '로그인 중…' : '로그인'}
-        </button>
-      </form>
+    <div className="flex min-h-screen items-center justify-center bg-neutral-50 px-4 font-mono">
+      <div className="w-full max-w-sm">
+        <h1 className="typ-meta mb-8 text-center text-neutral-900">Admin Login</h1>
+        <form action={formAction} className="space-y-5">
+          <div>
+            <label htmlFor="email" className="typ-meta mb-2 block text-neutral-700">
+              Email
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              className="block w-full rounded-none border border-neutral-300 bg-white px-3 py-3 text-[14px] placeholder:text-neutral-400 focus:border-black focus:outline-none"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="typ-meta mb-2 block text-neutral-700">
+              Password
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              className="block w-full rounded-none border border-neutral-300 bg-white px-3 py-3 text-[14px] placeholder:text-neutral-400 focus:border-black focus:outline-none"
+              required
+            />
+          </div>
+          {state.error && <p className="typ-caption text-red-500">{state.error}</p>}
+          <button
+            type="submit"
+            disabled={isPending}
+            className="typ-cta w-full rounded-none border border-black bg-black py-3 text-white uppercase transition-colors duration-200 hover:bg-white hover:text-black disabled:opacity-60"
+          >
+            로그인
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
