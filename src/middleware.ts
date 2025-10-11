@@ -4,14 +4,23 @@ import { env } from '@env/client';
 import { User } from '@supabase/supabase-js';
 
 const USER_PROTECTED_ROUTE = ['/cart'];
-const ADMIN_PROTECTED_ROUTE = ['/admin'];
+const ADMIN_ROUTE_PREFIX = '/admin';
+const ADMIN_GUARD_EXCEPTIONS = ['/admin/login'];
 
 function isUserProtectedRoute(pathname: string) {
   return USER_PROTECTED_ROUTE.some((r) => pathname.startsWith(r));
 }
 
-function isAdminProtectedRoute(pathname: string) {
-  return ADMIN_PROTECTED_ROUTE.some((r) => pathname.startsWith(r));
+function isAdminRoute(pathname: string) {
+  return pathname.startsWith(ADMIN_ROUTE_PREFIX);
+}
+
+function isAdminGuardException(pathname: string) {
+  return ADMIN_GUARD_EXCEPTIONS.some((route) => pathname.startsWith(route));
+}
+
+function shouldGuardAdminRoute(pathname: string) {
+  return isAdminRoute(pathname) && !isAdminGuardException(pathname);
 }
 
 function getPathname(request: NextRequest) {
@@ -48,7 +57,7 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    if (isAdminProtectedRoute(pathname)) {
+    if (shouldGuardAdminRoute(pathname)) {
       return NextResponse.redirect(new URL('/unauthorized', request.url));
     }
 
@@ -59,7 +68,7 @@ export async function middleware(request: NextRequest) {
 
   // 인증 + check admin
   const isAdmin = isAdminFromToken(user);
-  if (isAdminProtectedRoute(pathname) && !isAdmin) {
+  if (shouldGuardAdminRoute(pathname) && !isAdmin) {
     return NextResponse.redirect(new URL('/unauthorized', request.url));
   }
 
