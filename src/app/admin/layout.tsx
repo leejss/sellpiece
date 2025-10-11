@@ -1,18 +1,7 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "../globals.css";
+import type { ReactNode } from "react";
 import { AdminMobileDrawer } from "@/components/admin/admin-mobile-drawer";
 import { AdminAside } from "@/components/admin/admin-aside";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Admin - Sellpiece",
@@ -22,26 +11,20 @@ export const metadata: Metadata = {
 export default function AdminLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
-    <html lang="ko">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white`}
-      >
-        <div className="min-h-screen">
-          {/* Mobile Header */}
-          <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-            <AdminMobileDrawer />
-          </header>
+    <div className="min-h-screen bg-white">
+      {/* Mobile Header */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
+        <AdminMobileDrawer />
+      </header>
 
-          {/* Desktop Sidebar */}
-          <AdminAside />
+      {/* Desktop Sidebar */}
+      <AdminAside />
 
-          {/* Main Content */}
-          <main className="pt-16 lg:pt-0 lg:ml-64">{children}</main>
-        </div>
-      </body>
-    </html>
+      {/* Main Content */}
+      <main className="pt-16 lg:pt-0 lg:ml-64">{children}</main>
+    </div>
   );
 }
