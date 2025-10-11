@@ -20,13 +20,13 @@ export default async function EditCategoryPage({ params }: { params: Params }) {
         <div className="flex items-center gap-3 mb-2">
           <Link
             href="/admin/products/categories"
-            className="text-gray-500 hover:text-gray-700"
+            className="typ-link text-gray-500 hover:text-gray-700"
           >
             ← 카테고리 관리
           </Link>
         </div>
-        <h1 className="text-3xl font-bold mb-2">카테고리 수정</h1>
-        <p className="text-gray-600">{category.name} 카테고리를 수정합니다</p>
+        <h1 className="typ-title font-bold mb-2">카테고리 수정</h1>
+        <p className="typ-caption text-gray-600">{category.name} 카테고리를 수정합니다</p>
       </div>
 
       {/* 폼 */}

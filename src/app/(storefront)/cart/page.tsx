@@ -31,10 +31,10 @@ export default async function CartPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {items.length === 0 ? (
             <div className="text-center py-20">
-              <p className="text-sm text-gray-400 mb-6">empty</p>
+              <p className="typ-caption text-gray-400 mb-6">empty</p>
               <Link
                 href="/"
-                className="inline-block text-black hover:underline"
+                className="inline-block typ-body text-black hover:underline"
               >
                 continue shopping
               </Link>
@@ -59,26 +59,26 @@ export default async function CartPage() {
 
                 {/* Order Summary */}
                 <div className="border-t border-gray-200 pt-6 space-y-3">
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between typ-caption">
                     <span className="text-gray-600">subtotal</span>
                     <span className="font-medium">${subtotal.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between typ-caption">
                     <span className="text-gray-600">shipping</span>
                     <span className="font-medium">${shipping.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
+                  <div className="flex justify-between typ-caption">
                     <span className="text-gray-600">tax</span>
                     <span className="font-medium">${tax.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between text-base font-medium pt-3 border-t border-gray-200">
+                  <div className="flex justify-between typ-subtitle font-medium pt-3 border-t border-gray-200">
                     <span>total</span>
                     <span>${total.toFixed(2)}</span>
                   </div>
                 </div>
 
                 {/* Checkout Button */}
-                <button className="w-full mt-8 bg-black text-white py-4 text-xs tracking-wider hover:bg-gray-800 transition-colors">
+                <button className="w-full mt-8 bg-black text-white py-4 typ-cta hover:bg-gray-800 transition-colors">
                   proceed to checkout
                 </button>
 
@@ -86,7 +86,7 @@ export default async function CartPage() {
                 <div className="text-center mt-6">
                   <Link
                     href="/"
-                    className="text-xs tracking-wider underline hover:no-underline"
+                    className="typ-link tracking-wider"
                   >
                     continue shopping
                   </Link>

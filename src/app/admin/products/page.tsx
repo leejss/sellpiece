@@ -30,16 +30,16 @@ export default async function AdminProductsPage({
       {/* Header - Mobile First */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 sm:mb-12">
         <div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-2 sm:mb-4">
+          <h1 className="typ-title font-bold tracking-tight mb-2 sm:mb-4">
             Products
           </h1>
-          <p className="text-sm sm:text-base text-gray-500">
+          <p className="typ-caption text-gray-500">
             {stats.totalProducts} products registered
           </p>
         </div>
         <Link
           href="/admin/products/new"
-          className="w-full sm:w-auto px-6 py-3 bg-black text-white hover:bg-gray-800 transition text-sm text-center"
+          className="w-full sm:w-auto px-6 py-3 bg-black text-white hover:bg-gray-800 transition typ-cta text-center"
         >
           NEW PRODUCT
         </Link>

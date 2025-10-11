@@ -24,3 +24,32 @@ body {
   color: var(--foreground); */
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@utility typ-title {
+  @apply text-2xl sm:text-3xl font-semibold leading-snug;
+}
+
+@utility typ-subtitle {
+  @apply text-xl sm:text-2xl font-medium leading-snug;
+}
+
+@utility typ-body {
+  @apply text-lg sm:text-xl leading-relaxed;
+}
+
+@utility typ-caption {
+  @apply text-base sm:text-lg text-gray-500 tracking-wide;
+}
+
+@utility typ-meta {
+  @apply text-sm sm:text-base text-gray-600 uppercase tracking-wider;
+}
+
+/* CTA와 링크용 보조 타이포 유틸리티 */
+@utility typ-cta {
+  @apply text-base sm:text-lg tracking-wider;
+}
+
+@utility typ-link {
+  @apply text-base sm:text-lg underline hover:no-underline;
+}

@@ -44,23 +44,23 @@ export default async function ProductDetailPage({
           {/* Left: Info */}
           <div className="order-2 lg:order-1 flex flex-col justify-between">
             <div>
-              <h1 className="text-2xl sm:text-3xl tracking-tight leading-tight uppercase">
+              <h1 className="typ-title tracking-tight uppercase">
                 {product.name}
               </h1>
               {product.sku && (
-                <p className="mt-2 text-[10px] sm:text-xs uppercase tracking-wider text-gray-400">
+                <p className="mt-2 typ-meta text-gray-400">
                   {product.sku}
                 </p>
               )}
 
               {typeof product.price === "number" && (
-                <p className="mt-6 text-base sm:text-lg">
+                <p className="mt-6 typ-subtitle">
                   ${(product.price / 100).toFixed(2)}
                 </p>
               )}
 
               {product.description && (
-                <p className="mt-6 text-sm leading-6 text-gray-600 whitespace-pre-line">
+                <p className="mt-6 typ-body leading-6 text-gray-600 whitespace-pre-line">
                   {product.description}
                 </p>
               )}
@@ -86,7 +86,7 @@ export default async function ProductDetailPage({
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-white">
-                  <span className="text-[10px] sm:text-xs text-gray-300">
+                  <span className="typ-caption text-gray-300">
                     NO IMAGE
                   </span>
                 </div>
