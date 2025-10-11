@@ -1,7 +1,7 @@
 'use client';
 
 import { useActionState } from 'react';
-import { loginAction, type LoginState } from './actions';
+import { loginAction, type LoginState } from '@/actions/admin/auth';
 
 export default function AdminLoginPage() {
   const [state, formAction, isPending] = useActionState<LoginState, FormData>(loginAction, {});
@@ -9,7 +9,7 @@ export default function AdminLoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-neutral-50 px-4 font-mono">
       <div className="w-full max-w-sm">
-        <h1 className="typ-meta mb-8 text-center text-neutral-900">Admin Login</h1>
+        <h1 className="typ-meta mb-8 text-center text-neutral-900">Admin</h1>
         <form action={formAction} className="space-y-5">
           <div>
             <label htmlFor="email" className="typ-meta mb-2 block text-neutral-700">

@@ -26,7 +26,6 @@ export async function POST(req: Request) {
     if (!verifyProvisionSecret(req)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
     const body = await safeParseRequest(req);
     const validationError = validateRequestBody(body);
     if (validationError) {
@@ -60,11 +59,17 @@ async function provisionAdmin(
   const { email, password, fullName } = params;
 
   // 1. Find or create auth user
-  const { userId, isNewUser } = await findOrCreateAuthUser(svc, {
+  const [authRes, authErr] = await findOrCreateAuthUser(svc, {
     email,
     password,
     fullName,
   });
+
+  if (authErr || !authRes) {
+    throw authErr ?? new Error('Unknown error while creating/finding auth user');
+  }
+
+  const { userId, isNewUser } = authRes;
 
   // 2. Ensure admin record exists (with rollback on failure)
   try {
@@ -79,18 +84,10 @@ async function provisionAdmin(
   return { userId, isNewUser };
 }
 
-/**
- * Finds existing auth user by email or creates a new one.
- * Uses direct createUser attempt with error code checking.
- *
- * Supabase Auth error codes:
- * - "user_already_exists": User with this email already exists
- * - Other codes indicate actual failures
- */
 async function findOrCreateAuthUser(
   svc: SupabaseClient,
   params: { email: string; password: string; fullName?: string },
-): Promise<{ userId: string; isNewUser: boolean }> {
+): Promise<[{ userId: string; isNewUser: boolean } | null, Error | null]> {
   const { email, password, fullName } = params;
 
   const { data, error } = await svc.auth.admin.createUser({
@@ -107,33 +104,29 @@ async function findOrCreateAuthUser(
   if (error?.code === 'user_already_exists') {
     const userId = await getUserIdByEmail(svc, email);
     if (!userId) {
-      throw new Error('User exists but could not retrieve ID');
+      return [null, new Error('User exists but could not retrieve ID')];
     }
-    return { userId, isNewUser: false };
+
+    return [{ userId, isNewUser: false }, null];
   }
 
-  // Other errors - actual failures
   if (error) {
     console.error('createUser failed', {
       code: error.code,
       message: error.message,
     });
-    throw new Error('Failed to create auth user');
+    return [null, new Error('Failed to create auth user')];
   }
 
   // Success - new user created
   const userId = data.user?.id;
   if (!userId) {
-    throw new Error('User created but ID is missing');
+    return [null, new Error('User created but ID is missing')];
   }
 
-  return { userId, isNewUser: true };
+  return [{ userId, isNewUser: true }, null];
 }
 
-/**
- * Retrieves user ID by email using listUsers with pagination.
- * More efficient than loading all users at once.
- */
 async function getUserIdByEmail(svc: SupabaseClient, email: string): Promise<string | null> {
   const normalizedEmail = email.toLowerCase();
   let page = 1;

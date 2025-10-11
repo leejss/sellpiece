@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { isAdmin } from '@/lib/auth/isAdmin';
+import { adminAuthService } from '@/lib/services/admin/admin-auth.service';
 
 export type LoginState = {
   error?: string;
@@ -28,7 +29,6 @@ export async function loginAction(prevState: LoginState, formData: FormData): Pr
     return { error: error.message };
   }
 
-  // 로그인 성공 후, 관리자 여부를 확인 (admins.user_id & is_active)
   const user = data.user;
   if (!user) {
     console.error('User not found');
@@ -36,22 +36,13 @@ export async function loginAction(prevState: LoginState, formData: FormData): Pr
   }
 
   const userId = user.id;
-
   const allowed = await isAdmin(supabase, userId);
   if (!allowed) {
     await supabase.auth.signOut();
     return { error: '관리자 권한이 없습니다.' };
   }
 
-  // 관리자인 경우, last_login_at 갱신 및 user_metadata.role=admin 설정(UX용)
-  const { error: updateError } = await supabase
-    .from('admins')
-    .update({ last_login_at: new Date().toISOString() })
-    .eq('auth_user_id', userId);
-
-  if (updateError) {
-    console.error('Failed to update last_login_at:', updateError);
-  }
+  await adminAuthService.recordAdminLogin(userId);
 
   const { error: metadataError } = await supabase.auth.updateUser({
     data: { role: 'admin' },
