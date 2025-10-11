@@ -2,7 +2,6 @@
 
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
-import { isAdmin } from '@/lib/auth/isAdmin';
 import { adminAuthService } from '@/lib/services/admin/admin-auth.service';
 
 export type LoginState = {
@@ -36,7 +35,7 @@ export async function loginAction(prevState: LoginState, formData: FormData): Pr
   }
 
   const userId = user.id;
-  const allowed = await isAdmin(supabase, userId);
+  const allowed = await adminAuthService.isActiveAdmin(userId);
   if (!allowed) {
     await supabase.auth.signOut();
     return { error: '관리자 권한이 없습니다.' };
