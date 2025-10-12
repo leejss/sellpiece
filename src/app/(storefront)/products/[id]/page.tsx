@@ -2,11 +2,10 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getPublishedProductById } from '@/lib/db/queries/storefront/product';
 import { AddToCartPlaceholder } from '@/components/storefront/add-to-cart-placeholder';
-import { addToCart } from '../../../../actions/storefront/cart';
+import { addToCart } from '@/actions/storefront/cart';
+import type { Metadata } from 'next';
 
-export const revalidate = 60;
-
-export async function generateMetadata({ params }: { params: { id: string } }) {
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   const product = await getPublishedProductById(params.id);
   if (!product) return { title: 'Product not found' };
   return {
@@ -27,16 +26,15 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   } as const;
 }
 
-export default async function ProductDetailPage({ params }: { params: { id: string } }) {
-  const product = await getPublishedProductById(params.id);
+export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const id = (await params).id;
+  const product = await getPublishedProductById(id);
   if (!product) return notFound();
-
   const cover = product.images?.[0] ?? null;
-
   return (
     <div className="min-h-screen bg-white">
       <section className="px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 border lg:grid-cols-2 lg:gap-16">
           {/* Left: Info */}
           <div className="order-2 flex flex-col justify-between lg:order-1">
             <div>
@@ -52,11 +50,6 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
                   {product.description}
                 </p>
               )}
-            </div>
-
-            <div className="mt-8 lg:mt-12">
-              {/* Actions: keep minimal like yeezy.com */}
-              <AddToCartPlaceholder productId={product.id} action={addToCart} />
             </div>
           </div>
 
@@ -78,6 +71,7 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
                 </div>
               )}
             </div>
+            <AddToCartPlaceholder productId={product.id} action={addToCart} />
           </div>
         </div>
       </section>
