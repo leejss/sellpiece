@@ -34,7 +34,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   return (
     <div className="min-h-screen bg-white">
       <section className="px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 border lg:grid-cols-2 lg:gap-16">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
           {/* Left: Info */}
           <div className="order-2 flex flex-col justify-between lg:order-1">
             <div>

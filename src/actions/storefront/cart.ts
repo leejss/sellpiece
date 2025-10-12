@@ -4,21 +4,19 @@ import { db } from '@/lib/db';
 import { carts, cartItems } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
+import { requireUserId } from '@/lib/auth/session';
 
 /**
  * 장바구니에 상품 추가
- * TODO: 실제 구현 시 세션/사용자 인증 추가 필요
  */
 export async function addToCart(formData: FormData): Promise<void> {
   const productId = formData.get('productId') as string;
   const size = formData.get('size') as string | null;
   const quantity = Number(formData.get('quantity') ?? 1);
 
-  // TODO: 실제 사용자 ID 가져오기 (세션/인증)
-  const userId = 'temp-user-id'; // 임시
+  const userId = await requireUserId();
 
   try {
-    // 사용자의 장바구니 찾기 또는 생성
     let cart = await db.query.carts.findFirst({
       where: eq(carts.userId, userId),
     });
