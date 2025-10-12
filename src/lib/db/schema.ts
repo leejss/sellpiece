@@ -60,12 +60,12 @@ export const products = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => ({
-    categoryIdx: index('products_category_idx').on(table.categoryId),
-    statusIdx: index('products_status_idx').on(table.status),
-    skuUniqueIdx: uniqueIndex('products_sku_unique').on(table.sku),
-    barcodeUniqueIdx: uniqueIndex('products_barcode_unique').on(table.barcode),
-  }),
+  (table) => [
+    index('products_category_idx').on(table.categoryId),
+    index('products_status_idx').on(table.status),
+    uniqueIndex('products_sku_unique').on(table.sku),
+    uniqueIndex('products_barcode_unique').on(table.barcode),
+  ],
 );
 
 // 상품 이미지 테이블
@@ -81,10 +81,10 @@ export const productImages = pgTable(
     position: integer('position').notNull().default(0), // 이미지 순서
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => ({
-    productIdx: index('product_images_product_idx').on(table.productId),
-    positionIdx: index('product_images_position_idx').on(table.productId, table.position),
-  }),
+  (table) => [
+    index('product_images_product_idx').on(table.productId),
+    index('product_images_position_idx').on(table.productId, table.position),
+  ],
 );
 
 // Relations
@@ -132,10 +132,10 @@ export const cartItems = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => ({
-    cartIdx: index('cart_items_cart_idx').on(table.cartId),
-    productIdx: index('cart_items_product_idx').on(table.productId),
-  }),
+  (table) => [
+    index('cart_items_cart_idx').on(table.cartId),
+    index('cart_items_product_idx').on(table.productId),
+  ],
 );
 
 // Cart Relations

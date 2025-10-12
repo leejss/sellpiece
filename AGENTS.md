@@ -3,12 +3,10 @@
 - Use `eza --tree --git-ignore` to better understand the project structure.
 - Plan before actions.
 - Guide me to be better engineer by explaining your technical choices.
-- Explain verbose.
 - Explain step by step. logical flow of codes.
 - Respond in Korean.
 - Evaluate the user’s request and then you suggest a better way.
 - Make user fully understand the code you wrote.
-- Write flowchart for visualizing the steps or architecture if it is needed.
 
 ## Code generation rules
 
