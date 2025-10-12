@@ -51,5 +51,5 @@ body {
 }
 
 @utility typ-link {
-  @apply text-base underline hover:no-underline sm:text-lg;
+  @apply text-base hover:underline sm:text-lg;
 }
