@@ -1,5 +1,4 @@
 import { CartItem } from '@/components/storefront/cart-item';
-import { UserProfileSection } from '@/components/storefront/user-profile-section';
 import { requireUserId } from '@/lib/auth/session';
 import { getOrCreateUserCart } from '@/lib/services/storefront/cart.service';
 import Link from 'next/link';
@@ -37,54 +36,44 @@ export default async function CartPage() {
               </Link>
             </div>
           ) : (
-            <div className="flex flex-col gap-8 lg:flex-row lg:gap-12">
-              {/* Left Column - User Profile (Desktop) / Top Section (Mobile) */}
-              <div className="order-2 lg:order-1 lg:w-1/3">
-                <div className="lg:sticky lg:top-24">
-                  <UserProfileSection />
+            <div className="mx-auto max-w-2xl">
+              {/* Cart Items */}
+              <div className="mb-8">
+                {items.map((item) => (
+                  <CartItem key={item.id} item={item} />
+                ))}
+              </div>
+
+              {/* Order Summary */}
+              <div className="space-y-3 border-t border-gray-200 pt-6">
+                <div className="typ-caption flex justify-between">
+                  <span className="text-gray-600">subtotal</span>
+                  <span className="font-medium">${subtotal.toFixed(2)}</span>
+                </div>
+                <div className="typ-caption flex justify-between">
+                  <span className="text-gray-600">shipping</span>
+                  <span className="font-medium">${shipping.toFixed(2)}</span>
+                </div>
+                <div className="typ-caption flex justify-between">
+                  <span className="text-gray-600">tax</span>
+                  <span className="font-medium">${tax.toFixed(2)}</span>
+                </div>
+                <div className="typ-subtitle flex justify-between border-t border-gray-200 pt-3 font-medium">
+                  <span>total</span>
+                  <span>${total.toFixed(2)}</span>
                 </div>
               </div>
 
-              {/* Right Column - Cart Items */}
-              <div className="order-1 lg:order-2 lg:w-2/3">
-                {/* Cart Items */}
-                <div className="mb-8">
-                  {items.map((item) => (
-                    <CartItem key={item.id} item={item} />
-                  ))}
-                </div>
+              {/* Checkout Button */}
+              <button className="typ-cta mt-8 w-full bg-black py-4 text-white transition-colors hover:bg-gray-800">
+                proceed to checkout
+              </button>
 
-                {/* Order Summary */}
-                <div className="space-y-3 border-t border-gray-200 pt-6">
-                  <div className="typ-caption flex justify-between">
-                    <span className="text-gray-600">subtotal</span>
-                    <span className="font-medium">${subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="typ-caption flex justify-between">
-                    <span className="text-gray-600">shipping</span>
-                    <span className="font-medium">${shipping.toFixed(2)}</span>
-                  </div>
-                  <div className="typ-caption flex justify-between">
-                    <span className="text-gray-600">tax</span>
-                    <span className="font-medium">${tax.toFixed(2)}</span>
-                  </div>
-                  <div className="typ-subtitle flex justify-between border-t border-gray-200 pt-3 font-medium">
-                    <span>total</span>
-                    <span>${total.toFixed(2)}</span>
-                  </div>
-                </div>
-
-                {/* Checkout Button */}
-                <button className="typ-cta mt-8 w-full bg-black py-4 text-white transition-colors hover:bg-gray-800">
-                  proceed to checkout
-                </button>
-
-                {/* Continue Shopping Link */}
-                <div className="mt-6 text-center">
-                  <Link href="/" className="typ-link tracking-wider">
-                    continue shopping
-                  </Link>
-                </div>
+              {/* Continue Shopping Link */}
+              <div className="mt-6 text-center">
+                <Link href="/" className="typ-link tracking-wider">
+                  continue shopping
+                </Link>
               </div>
             </div>
           )}
